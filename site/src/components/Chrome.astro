@@ -15,7 +15,7 @@ const year = new Date().getFullYear();
       <nav aria-label="ניווט ראשי" class="topbar__nav">
         <a href="#about">על קורל</a>
         <a href="#process">התהליך</a>
-        <a class="topbar__cta" href="#questionnaire">לבדיקת התאמה</a>
+        <a class="topbar__cta" href="#questionnaire">שאלון התאמה</a>
       </nav>
     </div>
   </header>
@@ -45,7 +45,7 @@ const year = new Date().getFullYear();
     </a>
 
     <div class="mcta" data-mcta>
-      <a class="btn" href="#questionnaire">לבדיקת התאמה <small>· כ-5 דקות</small></a>
+      <a class="btn" href="#questionnaire">למילוי שאלון התאמה</a>
     </div>
   </>
 )}
@@ -59,7 +59,7 @@ const year = new Date().getFullYear();
   .topbar__tag { font-size: 0.8rem; opacity: 0.8; }
   .topbar__nav { display: flex; gap: 1.6rem; align-items: center; font-weight: 500; font-size: 0.98rem; }
   .topbar__nav a { text-decoration: none; }
-  .topbar__cta { border: 1px solid currentColor; border-radius: 999px; padding: 0.55rem 1.2rem; }
+  .topbar__cta { border: 1px solid currentColor; border-radius: 4px; padding: 0.5rem 1.1rem; }
   @media (max-width: 760px) { .topbar__nav a:not(.topbar__cta) { display: none; } .topbar__cta { display: none; } }
 
   .footer { background: var(--night); color: rgba(254, 250, 244, 0.85); padding-block: var(--space-l) calc(var(--space-m) + 5rem); }

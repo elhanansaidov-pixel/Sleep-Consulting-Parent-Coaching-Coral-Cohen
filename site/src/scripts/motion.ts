@@ -30,7 +30,6 @@ if (!reduce) {
   });
 
   initHero(lowData);
-  initReveals();
   initThreads();
   initTimeline();
 }
@@ -77,15 +76,6 @@ function initHero(lowData: boolean) {
         copy.style.transform = `translateY(${-40 * out}px)`;
       }
     },
-  });
-}
-
-function initReveals() {
-  gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
-    gsap.to(el, {
-      opacity: 1, y: 0, duration: 1.1, ease: 'power3.out',
-      scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-    });
   });
 }
 

@@ -6,8 +6,7 @@ const total = steps.length + 1;
 <section class="section q" id="questionnaire" aria-labelledby="q-title">
   <div class="wrap q__grid">
     <header class="q__head">
-      <p class="eyebrow">שאלון התאמה</p>
-      <h2 id="q-title">בואו נבדוק אם זה מתאים לכם</h2>
+      <h2 id="q-title">שאלון התאמה</h2>
       <p class="q__greet">{intro.greeting}</p>
       <p class="q__intro">{intro.body}</p>
       <p class="q__save">התשובות נשמרות במכשיר שלכם עד השליחה.</p>
@@ -97,7 +96,7 @@ const total = steps.length + 1;
   .q__greet { font-weight: 300; font-size: var(--step-2); margin-bottom: 0.3em; }
   .q__intro { color: var(--muted); max-width: 36rem; }
   .q__save { font-size: var(--step--1); color: var(--muted); }
-  .q__card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(1.25rem, 4vw, 2.75rem); box-shadow: 0 30px 60px -40px rgba(43, 38, 34, 0.35); }
+  .q__card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(1.25rem, 4vw, 2.75rem);  }
   .qform__progress { height: 3px; background: var(--sand-soft); border-radius: 3px; overflow: hidden; }
   .qform__progress span { display: block; height: 100%; width: 20%; background: var(--taupe); transition: width 0.6s var(--ease); }
   .qform__count { font-size: var(--step--1); color: var(--muted); margin: 0.75rem 0 1.25rem; }
@@ -111,7 +110,7 @@ const total = steps.length + 1;
   .qfield__list li { margin-bottom: 0.3rem; }
   .qfield input[type='text'], .qfield input[type='tel'], .qfield input[type='email'], .qfield textarea {
     width: 100%; font: inherit; color: var(--ink); background: var(--cream);
-    border: 1px solid var(--stone); border-radius: 12px; padding: 0.85rem 1rem; min-height: 3.25rem;
+    border: 1px solid var(--stone); border-radius: 4px; padding: 0.85rem 1rem; min-height: 3.25rem;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
   .qfield input[dir='ltr'] { text-align: right; }

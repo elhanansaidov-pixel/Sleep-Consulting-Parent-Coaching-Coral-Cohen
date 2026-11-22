@@ -1,0 +1,52 @@
+---
+/**
+ * A blank sleep-diary sheet — the real working tool of the process, shown as a design object.
+ * Deliberately empty: it illustrates the format, not results.
+ */
+const cols = ['השכבה', 'נרדם/ה', 'יקיצות', 'קם/ה בבוקר', 'תנומות', 'הערות'];
+const days = ['יום א׳', 'יום ב׳', 'יום ג׳', 'יום ד׳', 'יום ה׳', 'יום ו׳', 'שבת'];
+---
+<figure class="diary" aria-label="דוגמה לדף יומן שינה ריק">
+  <div class="diary__sheet">
+    <header class="diary__head">
+      <span class="diary__brand">coral cohen</span>
+      <span class="diary__title">יומן שינה · שבוע ___</span>
+    </header>
+    <table class="diary__table">
+      <thead>
+        <tr><th scope="col"><span class="sr-only">יום</span></th>{cols.map((c) => <th scope="col">{c}</th>)}</tr>
+      </thead>
+      <tbody>
+        {days.map((d) => (
+          <tr><th scope="row">{d}</th>{cols.map(() => <td></td>)}</tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <figcaption>יומן השינה הוא הכלי המרכזי בתהליך. ממלאים אותו כל יום, ואני מחזירה עליו משוב בבוקר.</figcaption>
+</figure>
+
+<style>
+  .diary { margin: 0; position: relative; }
+  .diary__sheet {
+    background: #fffdf9;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.5rem 1.25rem 1.75rem;
+    box-shadow: 0 1px 0 var(--line), 0 24px 48px -32px rgba(43, 38, 34, 0.4);
+    transform: rotate(-1.2deg);
+  }
+  .diary__head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--ink); padding-bottom: 0.6rem; margin-bottom: 0.4rem; }
+  .diary__brand { direction: ltr; font-size: 0.85rem; color: var(--muted); letter-spacing: 0.04em; }
+  .diary__title { font-weight: 500; }
+  .diary__table { width: 100%; border-collapse: collapse; font-size: 0.78rem; table-layout: fixed; }
+  .diary__table th { font-weight: 500; color: var(--muted); text-align: start; padding: 0.5rem 0.25rem; vertical-align: bottom; line-height: 1.25; }
+  .diary__table tbody th { color: var(--ink); white-space: nowrap; width: 3.6rem; }
+  .diary__table td, .diary__table tbody th { border-top: 1px solid var(--line); height: 2.4rem; }
+  .diary__table td + td, .diary__table th + td { border-inline-start: 1px dashed var(--line); }
+  .diary figcaption { font-size: var(--step--1); color: var(--muted); margin-top: 1.5rem; max-width: 28rem; }
+  @media (max-width: 520px) {
+    .diary__table { font-size: 0.66rem; }
+    .diary__table tbody th { width: 2.8rem; }
+  }
+</style>
