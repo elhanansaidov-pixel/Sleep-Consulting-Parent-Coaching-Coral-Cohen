@@ -1,0 +1,50 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+const { title, description, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const ogImage = new URL('/media/og.jpg', Astro.site).toString();
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'קורל כהן | ייעוץ שינה והדרכת הורים',
+  description,
+  url: Astro.site?.toString(),
+  telephone: '+972544277875',
+  areaServed: 'IL',
+  availableLanguage: 'he',
+  image: ogImage,
+};
+---
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#1e2230" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="he_IL" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">דילוג לתוכן</a>
+    <slot />
+  </body>
+</html>

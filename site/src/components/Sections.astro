@@ -1,0 +1,192 @@
+---
+import Thread from './Thread.astro';
+
+const pains = [
+  { t: 'הירדמות', d: 'ההשכבה נמשכת שעה ויותר, ונגמרת רק כשמישהו נשאר ליד המיטה.' },
+  { t: 'יקיצות', d: 'הלילה מתפרק להרבה יקיצות קטנות, ובבוקר כולם מתחילים את היום עייפים.' },
+  { t: 'תנומות יום', d: 'תנומות קצרות, מאבק להירדם או יום שכולו תלוי בשינה אחת.' },
+  { t: 'מעבר למיטה', d: 'מעבר למיטה או לחדר חדש שלא מצליח להחזיק לאורך זמן.' },
+];
+const principles = [
+  { t: 'התאמה אישית', d: 'תוכנית שנבנית סביב הילד והמשפחה, לא פתרון מהמדף.' },
+  { t: 'ליווי צמוד', d: 'משוב יומי ושיחה שבועית, כדי שלא תישארו לבד עם השאלות.' },
+  { t: 'שקיפות', d: 'אני מסבירה כל צעד ולמה עושים אותו, כדי שתרגישו בטוחים בדרך.' },
+];
+const steps = [
+  { t: 'שיחת היכרות בזום', m: 'כ-90 דקות', d: 'מכירים לעומק את הילד, את השגרה ואת המטרות שלכם.' },
+  { t: 'תוכנית אישית', m: 'בהתאמה מלאה', d: 'בונים יחד תוכנית שמתאימה לגיל, לאופי ולמשפחה שלכם.' },
+  { t: 'יומן שינה יומי', m: 'כמה דקות ביום', d: 'אתם ממלאים יומן שינה קצר בכל יום, וככה רואים את התמונה האמיתית.' },
+  { t: 'משוב יומי', m: 'בבוקר, עד 11:00', d: 'אני עוברת על היומן ושולחת משוב בשעות המענה הקבועות.' },
+  { t: 'שיחה שבועית', m: 'עד שעה', d: 'לרוב טלפונית. בודקים התקדמות ומדייקים את התוכנית.' },
+];
+const includes = [
+  'תוכנית שינה אישית ומפורטת',
+  'ליווי יומיומי דרך יומן השינה',
+  'שיחה שבועית קבועה',
+  'כלים מעשיים להורים, גם להמשך הדרך',
+];
+const fitYes = [
+  'אתם מרגישים שהשינה משפיעה על כל הבית ורוצים שינוי.',
+  'אתם מוכנים להתמיד בתהליך של כשמונה שבועות.',
+  'אתם יכולים להקדיש כמה דקות ביום ליומן השינה.',
+  'ההורים או המבוגרים המטפלים המרכזיים יכולים להיות שותפים לתהליך.',
+];
+const fitNo = [
+  'מחפשים פתרון מהיר של לילה אחד.',
+  'יש שאלה רפואית שדורשת בירור. במקרה כזה כדאי להתחיל אצל רופא/ת הילדים.',
+];
+---
+<!-- 2. Pains -->
+<section class="section pains" aria-labelledby="pains-title">
+  <div class="wrap pains__grid">
+    <header class="pains__head" data-reveal>
+      <p class="eyebrow">זה מרגיש לכם מוכר?</p>
+      <h2 id="pains-title">כשהשינה לא מסתדרת, כל הבית מרגיש את זה</h2>
+      <p class="lead">עייפות מצטברת, ערבים שמתארכים ושאלה אחת שחוזרת: מה עוד אפשר לעשות? אם אתם מזהים את עצמכם באחד מאלה, אתם לא לבד.</p>
+    </header>
+    <ol class="pains__list">
+      {pains.map((p, i) => (
+        <li class="pain" data-reveal>
+          <span class="pain__num">0{i + 1}</span>
+          <h3>{p.t}</h3>
+          <p>{p.d}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<Thread />
+
+<!-- 3. About -->
+<section class="section about" id="about" aria-labelledby="about-title">
+  <div class="wrap about__grid">
+    <figure class="about__mark" data-reveal>
+      <img src="/brand/logo-512.webp" alt="הלוגו של קורל כהן — ייעוץ שינה והדרכת הורים" width="512" height="512" loading="lazy" decoding="async" />
+    </figure>
+    <div class="about__text">
+      <p class="eyebrow" data-reveal>על קורל והגישה</p>
+      <h2 id="about-title" data-reveal>נעים להכיר, אני קורל</h2>
+      <p data-reveal>אני מלווה משפחות בתהליכי ייעוץ שינה והדרכת הורים. אני מאמינה שאין תוכנית אחת שמתאימה לכולם. כל ילד שונה, כל משפחה שונה, ולכל בית יש את הקצב שלו.</p>
+      <p data-reveal>לכן התהליך מתחיל בהקשבה. לפני שבונים תוכנית אני רוצה להבין את הילד, את השגרה ואת מה שכבר ניסיתם. הליווי שלי צמוד ומעשי: אני שם בשבילכם לאורך הדרך, בודקת איתכם מה עובד, ומתאימה את התוכנית בזמן אמת.</p>
+      <ul class="principles">
+        {principles.map((p) => (
+          <li data-reveal><h3>{p.t}</h3><p>{p.d}</p></li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Process -->
+<section class="section process" id="process" aria-labelledby="process-title">
+  <div class="wrap">
+    <header class="process__head" data-reveal>
+      <p class="eyebrow">איך התהליך עובד</p>
+      <h2 id="process-title">תהליך ברור, צעד אחר צעד</h2>
+      <p class="lead">כשמונה שבועות של ליווי, בהתאם לתוכנית שנקבע יחד.</p>
+    </header>
+    <ol class="timeline" data-timeline>
+      <span class="timeline__rail" aria-hidden="true"><span class="timeline__fill" data-timeline-fill></span></span>
+      {steps.map((s, i) => (
+        <li class="tstep" data-reveal>
+          <span class="tstep__dot" aria-hidden="true">{i + 1}</span>
+          <div>
+            <p class="tstep__meta">{s.m}</p>
+            <h3>{s.t}</h3>
+            <p>{s.d}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<!-- 5 + 6. Includes & Fit -->
+<section class="section fit" aria-labelledby="fit-title">
+  <div class="wrap fit__grid">
+    <div class="includes" data-reveal>
+      <p class="eyebrow">מה כולל הליווי</p>
+      <ul class="includes__list">
+        {includes.map((x) => <li>{x}</li>)}
+      </ul>
+    </div>
+    <div class="fit__body">
+      <h2 id="fit-title" data-reveal>האם התהליך מתאים לכם?</h2>
+      <div class="fit__cols">
+        <div data-reveal>
+          <h3>מתאים כש…</h3>
+          <ul class="ticks">{fitYes.map((x) => <li>{x}</li>)}</ul>
+        </div>
+        <div data-reveal>
+          <h3>פחות מתאים כש…</h3>
+          <ul class="ticks ticks--no">{fitNo.map((x) => <li>{x}</li>)}</ul>
+        </div>
+      </div>
+      <p class="fit__cta" data-reveal>לא בטוחים? בדיוק בשביל זה יש שאלון התאמה. <a href="#questionnaire">לשאלון ←</a></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Pains */
+  .pains { background: var(--cream); }
+  .pains__grid { display: grid; gap: var(--space-m); grid-template-columns: 1fr; }
+  .pains__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: var(--line); border-block: 1px solid var(--line); grid-template-columns: 1fr; }
+  .pain { background: var(--cream); padding: var(--space-s) 0.25rem; display: grid; grid-template-columns: 3.2rem 1fr; column-gap: 1rem; }
+  .pain__num { font-family: var(--font-display); color: var(--taupe); font-size: var(--step-1); grid-row: span 2; line-height: 1.3; }
+  .pain h3 { margin: 0 0 0.2em; }
+  .pain p { margin: 0; color: var(--muted); }
+  @media (min-width: 900px) {
+    .pains__grid { grid-template-columns: 5fr 6fr; align-items: start; }
+    .pains__head { position: sticky; top: 15vh; }
+  }
+
+  /* About */
+  .about__grid { display: grid; gap: var(--space-m); }
+  .about__mark { margin: 0; max-width: 22rem; justify-self: center; }
+  .about__mark img { width: 100%; height: auto; border-radius: 50%; }
+  .principles { list-style: none; padding: 0; margin: var(--space-m) 0 0; display: grid; gap: var(--space-s); }
+  .principles li { border-top: 1px solid var(--line); padding-top: 1rem; }
+  .principles h3 { font-size: var(--step-1); margin-bottom: 0.25em; }
+  .principles p { color: var(--muted); margin: 0; }
+  @media (min-width: 900px) {
+    .about__grid { grid-template-columns: 5fr 7fr; align-items: center; }
+    .principles { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Process */
+  .process { background: var(--sand-soft); }
+  .process__head { max-width: 40rem; margin-bottom: var(--space-m); }
+  .timeline { list-style: none; margin: 0; padding: 0; position: relative; display: grid; gap: var(--space-m); }
+  .timeline__rail { position: absolute; inset-block: 0.5rem; inset-inline-start: 1.375rem; width: 1px; background: var(--stone); }
+  .timeline__fill { position: absolute; inset: 0; background: var(--taupe); transform-origin: top; transform: scaleY(0); }
+  .no-motion .timeline__fill, :global(html:not(.js-motion)) .timeline__fill { transform: none; }
+  .tstep { display: grid; grid-template-columns: 2.75rem 1fr; gap: 1.25rem; position: relative; }
+  .tstep__dot {
+    width: 2.75rem; height: 2.75rem; border-radius: 50%; display: grid; place-items: center;
+    background: var(--cream); border: 1px solid var(--taupe); font-family: var(--font-display); font-size: var(--step-0); position: relative; z-index: 1;
+  }
+  .tstep__meta { font-size: var(--step--1); font-weight: 600; color: var(--taupe); letter-spacing: 0.06em; margin: 0.4rem 0 0.2rem; }
+  .tstep h3 { margin-bottom: 0.25em; }
+  .tstep p:last-child { color: var(--muted); margin: 0; max-width: 34rem; }
+
+  /* Includes + fit */
+  .fit__grid { display: grid; gap: var(--space-m); }
+  .includes { background: var(--night); color: var(--cream); border-radius: var(--radius); padding: var(--space-m) var(--space-s); align-self: start; }
+  .includes .eyebrow { color: var(--sand); }
+  .includes__list { list-style: none; margin: 0; padding: 0; font-family: var(--font-display); font-size: var(--step-1); line-height: 1.4; }
+  .includes__list li { padding-block: 0.9rem; border-bottom: 1px solid rgba(254, 250, 244, 0.16); }
+  .includes__list li:last-child { border-bottom: 0; }
+  .fit__cols { display: grid; gap: var(--space-s); margin-top: var(--space-s); }
+  .ticks { list-style: none; padding: 0; margin: 0; }
+  .ticks li { position: relative; padding-inline-start: 1.8rem; margin-bottom: 0.7rem; }
+  .ticks li::before { content: ''; position: absolute; inset-inline-start: 0; top: 0.7em; width: 0.9rem; height: 1px; background: var(--taupe); }
+  .ticks--no li { color: var(--muted); }
+  .fit__cta { margin-top: var(--space-s); font-size: var(--step-1); font-family: var(--font-display); }
+  .fit__cta a { color: var(--taupe); text-underline-offset: 0.25em; }
+  @media (min-width: 900px) {
+    .fit__grid { grid-template-columns: 5fr 7fr; }
+    .fit__cols { grid-template-columns: 1fr 1fr; }
+  }
+</style>
