@@ -22,8 +22,8 @@ POST /v1/projects/{ref}/database/query  {"query": "<file contents>"}
 - `../tests/e2e/admin-auth.cjs` — browser E2E of the login + MFA flow. Create a temporary user with the admin API, run, then delete the user.
 
 ## Auth settings
-Signup disabled · TOTP MFA enabled · password ≥ 12 chars with lower/upper/digit · redirect allow-list: localhost:4321, coral-cohen-sleep.pages.dev.
+Signup disabled · TOTP MFA enabled · password ≥ 12 chars with lower/upper/digit · Hebrew invite/recovery templates · SMTP via Gmail (`systems.notify1@gmail.com`, app password set in the dashboard) · site URL + redirect allow-list: the workers.dev preview/live URLs and localhost:4321.
 
-## Pending (stage C)
-- Custom SMTP (Resend) — Supabase's built-in mailer only delivers to org team members, so staff invites are sent after SMTP is configured.
-- Invite Coral (`owner`) and the technical admin (`tech_admin`).
+## Staff
+- Coral — `owner` (invited 2026-11-23) · technical admin — `tech_admin` (invited 2026-11-23).
+- Invites are sent with `POST /auth/v1/invite` (secret key fetched at runtime, never stored); then insert the `profiles` row.

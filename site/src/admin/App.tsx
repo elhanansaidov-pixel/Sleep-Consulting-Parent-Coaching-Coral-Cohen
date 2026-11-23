@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from 'react';
-import { useAuthState } from './auth/useAuthState';
-import { LoginScreen, MfaEnrollScreen, MfaChallengeScreen, NoAccessScreen } from './auth/AuthScreens';
+import { useAuthState, clearNeedsPassword } from './auth/useAuthState';
+import { LoginScreen, SetPasswordScreen, MfaEnrollScreen, MfaChallengeScreen, NoAccessScreen } from './auth/AuthScreens';
 import { Shell, NAV, type RouteId } from './layout/Shell';
 import { DashboardScreen, PlaceholderScreen, SettingsScreen } from './screens/Screens';
 import './admin.css';
@@ -23,15 +23,16 @@ function useHashRoute(): RouteId {
 }
 
 export default function App() {
-  const { stage } = useAuthState();
+  const { stage, refresh } = useAuthState();
   const route = useHashRoute();
 
   if (stage.kind === 'loading') {
     return <div className="boot"><span className="spinner" aria-label="טוען" /></div>;
   }
   if (stage.kind === 'signed-out') return <LoginScreen />;
-  if (stage.kind === 'mfa-enroll') return <MfaEnrollScreen />;
-  if (stage.kind === 'mfa-challenge') return <MfaChallengeScreen factorId={stage.factorId} />;
+  if (stage.kind === 'set-password') return <SetPasswordScreen onDone={() => { clearNeedsPassword(); refresh(); }} />;
+  if (stage.kind === 'mfa-enroll') return <MfaEnrollScreen onDone={refresh} />;
+  if (stage.kind === 'mfa-challenge') return <MfaChallengeScreen factorId={stage.factorId} onDone={refresh} />;
   if (stage.kind === 'no-access') return <NoAccessScreen />;
 
   const screens: Record<RouteId, ReactElement> = {

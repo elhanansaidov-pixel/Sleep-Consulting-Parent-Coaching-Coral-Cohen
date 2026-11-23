@@ -21,3 +21,6 @@
 | 17 | 2026-11-23 | גישה לנתונים מחייבת פרופיל צוות **וגם** סשן מאומת MFA (aal2), נאכף ב-RLS | MFA רק בממשק | אכיפה בצד השרת |
 | 18 | 2026-11-23 | פונקציות SECURITY DEFINER בסכמה `private`; רישום צפייה בפנייה דרך טבלת `lead_views` עם RLS | RPC ציבורי | אפס אזהרות ב-Security Advisor |
 | 19 | 2026-11-23 | הזמנות למשתמשים נשלחות רק אחרי הגדרת SMTP (Resend) בשלב C | מייל ברירת המחדל של Supabase | שולח רק לחברי הארגון ב-Supabase |
+| 20 | 2026-11-23 | מיילים מהמערכת: SMTP של Gmail (`systems.notify1@gmail.com`, סיסמת אפליקציה נפרדת) — ל-Auth ולהתראות | Resend (דורש דומיין), Brevo | חינם, בלי דומיין, ללא גישה למייל של קורל |
+| 21 | 2026-11-23 | אחסון: Cloudflare **Workers** (static assets בלבד, `site/wrangler.jsonc`) במקום Pages; תצוגה מקדימה ב-`preview-coral-cohen-sleep.coral-cohen-site.workers.dev` | Pages | wrangler 4.167 מעביר אוטומטית ל-Workers; Cloudflare ממליצים על Workers; חינם ומותר מסחרית |
+| 22 | 2026-11-23 | Production של ה-Worker מתעדכן רק עם `wrangler deploy` באישור בעל הפרויקט; עדכונים שוטפים דרך `wrangler versions upload --preview-alias preview` | — | בקרת פרסום |

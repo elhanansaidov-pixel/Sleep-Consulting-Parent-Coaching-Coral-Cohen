@@ -19,11 +19,89 @@ function ErrorLine({ text }: { text: string }) {
   return text ? <p className="field__err" role="alert">{text}</p> : null;
 }
 
+const PW_RULES = 'לפחות 12 תווים, עם אות גדולה, אות קטנה וספרה (באנגלית).';
+function passwordOk(pw: string) {
+  return pw.length >= 12 && /[a-z]/.test(pw) && /[A-Z]/.test(pw) && /[0-9]/.test(pw);
+}
+
+export function SetPasswordScreen({ onDone }: { onDone: () => void }) {
+  const [pw, setPw] = useState('');
+  const [pw2, setPw2] = useState('');
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    setErr('');
+    if (!passwordOk(pw)) return setErr(`הסיסמה צריכה להיות ${PW_RULES}`);
+    if (pw !== pw2) return setErr('הסיסמאות לא זהות.');
+    setBusy(true);
+    const { error } = await supabase.auth.updateUser({ password: pw });
+    setBusy(false);
+    if (error) {
+      const m = error.message?.toLowerCase() ?? '';
+      return setErr(m.includes('same') ? 'בחרו סיסמה שונה מהקודמת.' : m.includes('weak') ? `הסיסמה חלשה מדי. ${PW_RULES}` : authErrorMessage(error));
+    }
+    onDone();
+  }
+
+  return (
+    <AuthCard title="בחירת סיסמה" lead={PW_RULES}>
+      <form onSubmit={onSubmit} noValidate>
+        <div className="field">
+          <label htmlFor="pw1">סיסמה חדשה</label>
+          <input id="pw1" type="password" dir="ltr" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} />
+        </div>
+        <div className="field">
+          <label htmlFor="pw2">הקלדה חוזרת</label>
+          <input id="pw2" type="password" dir="ltr" autoComplete="new-password" value={pw2} onChange={(e) => setPw2(e.target.value)} />
+        </div>
+        <ErrorLine text={err} />
+        <button className="cbtn cbtn--primary cbtn--block" disabled={busy || !pw || !pw2}>{busy ? 'שומרים…' : 'שמירה והמשך'}</button>
+      </form>
+    </AuthCard>
+  );
+}
+
+function ForgotPassword({ onBack }: { onBack: () => void }) {
+  const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    // Same response whether or not the address exists (no account enumeration).
+    await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/admin` });
+    setBusy(false);
+    setSent(true);
+  }
+
+  return (
+    <AuthCard title="איפוס סיסמה" lead={sent ? undefined : 'נשלח קישור לבחירת סיסמה חדשה למייל שלכם.'}>
+      {sent ? (
+        <p role="status">אם הכתובת רשומה במערכת, נשלח אליה קישור לאיפוס. הקישור תקף ל-24 שעות.</p>
+      ) : (
+        <form onSubmit={onSubmit} noValidate>
+          <div className="field">
+            <label htmlFor="fp-email">מייל</label>
+            <input id="fp-email" type="email" dir="ltr" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <button className="cbtn cbtn--primary cbtn--block" disabled={busy || !email}>{busy ? 'שולחים…' : 'שליחת קישור'}</button>
+        </form>
+      )}
+      <button className="cbtn cbtn--ghost cbtn--block" onClick={onBack}>חזרה לכניסה</button>
+    </AuthCard>
+  );
+}
+
 export function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
+  const [forgot, setForgot] = useState(false);
+  if (forgot) return <ForgotPassword onBack={() => setForgot(false)} />;
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -50,6 +128,7 @@ export function LoginScreen() {
           {busy ? 'נכנסים…' : 'כניסה'}
         </button>
       </form>
+      <button className="cbtn cbtn--ghost cbtn--block" onClick={() => setForgot(true)}>שכחתי סיסמה</button>
     </AuthCard>
   );
 }
@@ -76,7 +155,7 @@ function CodeInput({ value, onChange }: { value: string; onChange: (v: string) =
   );
 }
 
-export function MfaEnrollScreen() {
+export function MfaEnrollScreen({ onDone }: { onDone: () => void }) {
   const [qr, setQr] = useState('');
   const [secret, setSecret] = useState('');
   const [factorId, setFactorId] = useState('');
@@ -105,7 +184,8 @@ export function MfaEnrollScreen() {
     setBusy(true);
     const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
     setBusy(false);
-    if (error) setErr(authErrorMessage(error));
+    if (error) return setErr(authErrorMessage(error));
+    onDone();
   }
 
   return (
@@ -135,7 +215,7 @@ export function MfaEnrollScreen() {
   );
 }
 
-export function MfaChallengeScreen({ factorId }: { factorId: string }) {
+export function MfaChallengeScreen({ factorId, onDone }: { factorId: string; onDone: () => void }) {
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
@@ -146,7 +226,8 @@ export function MfaChallengeScreen({ factorId }: { factorId: string }) {
     setBusy(true);
     const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
     setBusy(false);
-    if (error) setErr(authErrorMessage(error));
+    if (error) return setErr(authErrorMessage(error));
+    onDone();
   }
 
   return (
