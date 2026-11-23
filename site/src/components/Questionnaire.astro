@@ -1,15 +1,16 @@
 ---
-import { intro, steps, consent, thanks, WHATSAPP_URL } from '../data/questionnaire';
+import { intro, steps, consent, thanks, WHATSAPP_URL, WHATSAPP_PARENTING_URL } from '../data/questionnaire';
 const endpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT ?? '';
 const total = steps.length + 1;
 ---
 <section class="section q" id="questionnaire" aria-labelledby="q-title">
   <div class="wrap q__grid">
     <header class="q__head">
-      <h2 id="q-title">שאלון התאמה</h2>
+      <h2 id="q-title">שאלון התאמה לייעוץ שינה</h2>
       <p class="q__greet">{intro.greeting}</p>
       <p class="q__intro">{intro.body}</p>
       <p class="q__save">התשובות נשמרות במכשיר שלכם עד השליחה.</p>
+      <p class="q__other">מתעניינים בהדרכת הורים? <a href={WHATSAPP_PARENTING_URL} target="_blank" rel="noopener">כתבו לי בוואטסאפ</a></p>
     </header>
 
     <div class="q__card">
@@ -96,6 +97,8 @@ const total = steps.length + 1;
   .q__greet { font-weight: 300; font-size: var(--step-2); margin-bottom: 0.3em; }
   .q__intro { color: var(--muted); max-width: 36rem; }
   .q__save { font-size: var(--step--1); color: var(--muted); }
+  .q__other { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  .q__other a { font-weight: 500; text-underline-offset: 0.3em; }
   .q__card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(1.25rem, 4vw, 2.75rem);  }
   .qform__progress { height: 3px; background: var(--sand-soft); border-radius: 3px; overflow: hidden; }
   .qform__progress span { display: block; height: 100%; width: 20%; background: var(--taupe); transition: width 0.6s var(--ease); }

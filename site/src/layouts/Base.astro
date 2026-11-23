@@ -19,6 +19,15 @@ const jsonLd = {
   areaServed: 'IL',
   availableLanguage: 'he',
   image: ogImage,
+  founder: {
+    '@type': 'Person',
+    name: 'קורל כהן',
+    jobTitle: 'יועצת שינה ומדריכת הורים',
+    hasCredential: [
+      { '@type': 'EducationalOccupationalCredential', name: 'ייעוץ שינה בשיטת לילה טוב', credentialCategory: 'certificate', recognizedBy: { '@type': 'Organization', name: 'הבית למקצועות ההורות' } },
+      { '@type': 'EducationalOccupationalCredential', name: 'מדריכת הורים פרטנית, גישת אדלר', credentialCategory: 'certificate', recognizedBy: { '@type': 'Organization', name: 'הבית למקצועות ההורות' } },
+    ],
+  },
 };
 ---
 <!doctype html>

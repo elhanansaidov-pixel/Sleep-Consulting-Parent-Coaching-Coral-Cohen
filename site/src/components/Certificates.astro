@@ -1,0 +1,74 @@
+---
+/** Coral's two certifications. Images have the ID number removed (see docs/decisions.md #13). */
+const certs = [
+  {
+    id: 'sleep',
+    title: 'יועצת שינה מוסמכת',
+    detail: 'שיטת "לילה טוב" · גיל 5 חודשים עד 5 שנים · 95 שעות אקדמיות',
+    org: 'הבית למקצועות ההורות · ינואר 2025',
+    alt: 'תעודת הסמכה של קורל כהן: ייעוץ שינה בשיטת לילה טוב, מגיל 5 חודשים עד 5 שנים, 95 שעות אקדמיות, ינואר 2025, הבית למקצועות ההורות',
+  },
+  {
+    id: 'parent',
+    title: 'מדריכת הורים פרטנית מוסמכת',
+    detail: 'מבוסס גישת אדלר · 249 שעות אקדמיות',
+    org: 'הבית למקצועות ההורות · אוגוסט 2025',
+    alt: 'תעודת גמר של קורל כהן: מסלול הכשרה כמדריכת הורים פרטנית מבוסס גישת אדלר, 249 שעות אקדמיות, אוגוסט 2025, הבית למקצועות ההורות',
+  },
+];
+---
+<div class="certs" aria-labelledby="certs-title">
+  <h3 id="certs-title" class="certs__title">הסמכות</h3>
+  <ul class="certs__list">
+    {certs.map((c) => (
+      <li class="cert">
+        <button type="button" class="cert__open" data-cert-open={c.id} aria-haspopup="dialog">
+          <img src={`/certs/${c.id}-sm.webp`} alt="" width="600" height="450" loading="lazy" decoding="async" />
+          <span class="sr-only">הגדלת התעודה: {c.title}</span>
+        </button>
+        <div>
+          <p class="cert__title">{c.title}</p>
+          <p class="cert__detail">{c.detail}</p>
+          <p class="cert__org">{c.org}</p>
+        </div>
+        <dialog class="cert__dialog" data-cert-dialog={c.id} aria-label={c.title}>
+          <form method="dialog"><button class="cert__close" aria-label="סגירה">×</button></form>
+          <img src={`/certs/${c.id}-lg.webp`} alt={c.alt} width="1600" height="1200" loading="lazy" decoding="async" />
+        </dialog>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-cert-open]').forEach((btn) => {
+    const dlg = document.querySelector<HTMLDialogElement>(`[data-cert-dialog="${btn.dataset.certOpen}"]`);
+    if (!dlg) return;
+    btn.addEventListener('click', () => dlg.showModal());
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('close', () => btn.focus());
+  });
+</script>
+
+<style>
+  .certs { margin-top: var(--space-m); border-top: 1px solid var(--ink); padding-top: 1.25rem; }
+  .certs__title { font-size: var(--step-0); font-weight: 500; color: var(--muted); }
+  .certs__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-s); }
+  .cert { display: grid; grid-template-columns: 9rem 1fr; gap: 1.25rem; align-items: center; }
+  .cert p { margin: 0; }
+  .cert__title { font-weight: 500; font-size: var(--step-1); }
+  .cert__detail, .cert__org { color: var(--muted); font-size: var(--step--1); }
+  .cert__open { padding: 0; border: 1px solid var(--line); background: #fff; cursor: zoom-in; border-radius: 3px; box-shadow: 0 12px 24px -18px rgba(43, 38, 34, 0.5); transition: transform 0.3s var(--ease); }
+  .cert__open:hover { transform: rotate(-1deg) scale(1.03); }
+  .cert__open img { width: 100%; height: auto; border-radius: 3px; }
+  .cert__dialog { border: 0; padding: 0; background: transparent; max-width: 94vw; max-height: 92vh; overflow: visible; }
+  .cert__dialog::backdrop { background: rgba(18, 20, 28, 0.82); }
+  .cert__dialog img { display: block; width: auto; height: auto; max-width: min(94vw, 1100px); max-height: 90vh; border-radius: 4px; }
+  .cert__close {
+    position: absolute; top: 0.6rem; inset-inline-end: 0.6rem; width: 2.75rem; height: 2.75rem;
+    border-radius: 50%; border: 0; background: var(--ink); color: var(--cream); font-size: 1.6rem; line-height: 1; cursor: pointer;
+  }
+  @media (min-width: 900px) {
+    .certs__list { grid-template-columns: 1fr 1fr; gap: var(--space-m); }
+  }
+</style>

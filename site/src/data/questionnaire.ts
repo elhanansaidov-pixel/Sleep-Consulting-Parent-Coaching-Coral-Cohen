@@ -79,3 +79,9 @@ export const thanks = 'תודה ששיתפתם אותי. אחזור אליכם �
 export const WHATSAPP_URL =
   'https://wa.me/972544277875?text=' +
   encodeURIComponent('היי קורל, הגעתי מהאתר ואשמח לשמוע על תהליך ייעוץ השינה 🤍');
+
+export const WHATSAPP_PARENTING_URL =
+  'https://wa.me/972544277875?text=' +
+  encodeURIComponent('היי קורל, הגעתי מהאתר ואשמח לשמוע על הדרכת הורים 🤍');
+
+export const CONTACT_EMAIL = 'coral12007@walla.co.il';
