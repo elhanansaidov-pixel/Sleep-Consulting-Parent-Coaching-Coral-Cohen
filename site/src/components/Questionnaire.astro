@@ -1,6 +1,7 @@
 ---
 import { intro, steps, consent, thanks, WHATSAPP_URL, WHATSAPP_PARENTING_URL } from '../data/questionnaire';
-const endpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT ?? '';
+const endpoint = 'https://fvkeawbtwbqcvtbqjwem.supabase.co/functions/v1/submit-lead';
+const turnstileSiteKey = '0x4AAAAAAGPjl8NbGvMuPIOl'; // public site key
 const total = steps.length + 1;
 ---
 <section class="section q" id="questionnaire" aria-labelledby="q-title">
@@ -66,7 +67,8 @@ const total = steps.length + 1;
             <p class="qfield__err" id="q-full_name-err" aria-live="polite"></p>
           </div>
           <p class="qfield__hint">תאריך: יירשם אוטומטית בעת השליחה.</p>
-          <div class="qturnstile" data-q-turnstile></div>
+          <div class="qturnstile" data-q-turnstile data-sitekey={turnstileSiteKey}></div>
+          <p class="qfield__hint">האימות מפני ספאם נעשה אוטומטית ברקע.</p>
         </fieldset>
 
         <div class="qform__nav">

@@ -27,3 +27,8 @@ Signup disabled · TOTP MFA enabled · password ≥ 12 chars with lower/upper/di
 ## Staff
 - Coral — `owner` (invited 2026-11-23) · technical admin — `tech_admin` (invited 2026-11-23).
 - Invites are sent with `POST /auth/v1/invite` (secret key fetched at runtime, never stored); then insert the `profiles` row.
+
+## Edge Functions
+- `submit-lead` (public, `verify_jwt=false`) — website questionnaire intake. Secrets: `TURNSTILE_SECRET`, `SMTP_USER`, `SMTP_PASSWORD`, `NOTIFY_TO`, `ADMIN_URL`, `IP_HASH_SALT` (set in Supabase, never in the repo).
+- Deploy: `POST /v1/projects/{ref}/functions/deploy?slug=submit-lead` (multipart: metadata + index.ts).
+- Testing note: Cloudflare Turnstile does not issue tokens to headless browsers. The success path was tested with a temporary, key-protected copy of the function that was deleted right after.

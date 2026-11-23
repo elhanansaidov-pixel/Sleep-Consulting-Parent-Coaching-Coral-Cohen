@@ -107,7 +107,7 @@ begin
   -- 14. audit row stores field names, not values
   execute $q$select count(*) from public.audit_log where table_name = 'leads' and action = 'update' and changed_fields = array['priority']$q$ into n;
   report := report || format(E'\n%s audit update recorded field names only = %s (expect 1)', case when n = 1 then 'PASS' else 'FAIL' end, n);
-  execute $q$select count(*) from public.audit_log where action = 'view'$q$ into n;
+  execute 'select count(*) from public.audit_log where action = ''view'' and row_id = $1' into n using lead_id;
   report := report || format(E'\n%s audit view recorded = %s (expect 1)', case when n = 1 then 'PASS' else 'FAIL' end, n);
 
   -- 15. nobody can write to audit_log directly

@@ -7,7 +7,32 @@ const MSG = {
   consent: 'יש לאשר את ההצהרה כדי לשלוח',
   send: 'משהו השתבש בשליחה. התשובות שמורות, נסו שוב או כתבו לי בוואטסאפ.',
   notConnected: 'זו גרסת תצוגה: השליחה עדיין לא מחוברת למערכת. התשובות שמורות במכשיר.',
+  captcha: 'האימות האוטומטי מפני ספאם לא הושלם. המתינו רגע ונסו שוב.',
+  rate: 'נשלחו מכאן כמה פניות בזמן קצר. נסו שוב בעוד שעה, או כתבו לי בוואטסאפ.',
+  invalid: 'נראה שאחד השדות לא תקין. בדקו את התשובות ונסו שוב.',
 };
+
+type TurnstileApi = {
+  render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+  reset: (id?: string) => void;
+};
+declare global { interface Window { turnstile?: TurnstileApi } }
+
+let turnstileLoading: Promise<void> | null = null;
+function loadTurnstile(): Promise<void> {
+  if (window.turnstile) return Promise.resolve();
+  if (!turnstileLoading) {
+    turnstileLoading = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = () => { turnstileLoading = null; reject(new Error('turnstile')); };
+      document.head.appendChild(s);
+    });
+  }
+  return turnstileLoading;
+}
 
 type Ctl = HTMLInputElement | HTMLTextAreaElement;
 
@@ -51,7 +76,19 @@ export function initQuestionnaire() {
   const status = form.querySelector<HTMLElement>('[data-q-status]')!;
   const done = document.querySelector<HTMLElement>('[data-q-done]')!;
   const endpoint = form.dataset.endpoint ?? '';
+  const tsBox = form.querySelector<HTMLElement>('[data-q-turnstile]');
+  let tsWidget: string | null = null;
   let current = 0;
+
+  const ensureTurnstile = async () => {
+    if (!tsBox || tsWidget !== null || !tsBox.dataset.sitekey) return;
+    try {
+      await loadTurnstile();
+      tsWidget = window.turnstile!.render(tsBox, { sitekey: tsBox.dataset.sitekey, language: 'he', theme: 'light', size: 'flexible' });
+    } catch { /* network/CSP issue: server will reject without a token and we show a message */ }
+  };
+  // Load the anti-spam widget only once the visitor starts the questionnaire.
+  form.addEventListener('focusin', () => { loadTurnstile().catch(() => {}); }, { once: true });
 
   const controls = () => Array.from(form.querySelectorAll<Ctl>('input[name]:not([name="website"]), textarea[name]'));
 
@@ -79,6 +116,7 @@ export function initQuestionnaire() {
     const last = current === steps.length - 1;
     next.hidden = last;
     submit.hidden = !last;
+    if (last) ensureTurnstile();
     bar.style.width = `${((current + 1) / steps.length) * 100}%`;
     count.textContent = `שלב ${current + 1} מתוך ${steps.length}`;
   };
@@ -130,13 +168,19 @@ export function initQuestionnaire() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error(String(res.status));
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        const err = new Error(body?.error ?? String(res.status));
+        throw err;
+      }
       safeStorage.clear();
       form.hidden = true;
       done.hidden = false;
       done.focus();
-    } catch {
-      status.textContent = MSG.send;
+    } catch (e) {
+      const code = (e as Error).message;
+      status.textContent = code === 'captcha' ? MSG.captcha : code === 'rate_limited' ? MSG.rate : code === 'invalid' ? MSG.invalid : MSG.send;
+      if (tsWidget !== null) window.turnstile?.reset(tsWidget);
     } finally {
       submit.disabled = false;
       submit.textContent = 'שליחת השאלון';

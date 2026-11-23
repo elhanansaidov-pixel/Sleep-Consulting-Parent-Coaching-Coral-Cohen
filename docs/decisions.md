@@ -24,3 +24,5 @@
 | 20 | 2026-11-23 | מיילים מהמערכת: SMTP של Gmail (`systems.notify1@gmail.com`, סיסמת אפליקציה נפרדת) — ל-Auth ולהתראות | Resend (דורש דומיין), Brevo | חינם, בלי דומיין, ללא גישה למייל של קורל |
 | 21 | 2026-11-23 | אחסון: Cloudflare **Workers** (static assets בלבד, `site/wrangler.jsonc`) במקום Pages; תצוגה מקדימה ב-`preview-coral-cohen-sleep.coral-cohen-site.workers.dev` | Pages | wrangler 4.167 מעביר אוטומטית ל-Workers; Cloudflare ממליצים על Workers; חינם ומותר מסחרית |
 | 22 | 2026-11-23 | Production של ה-Worker מתעדכן רק עם `wrangler deploy` באישור בעל הפרויקט; עדכונים שוטפים דרך `wrangler versions upload --preview-alias preview` | — | בקרת פרסום |
+| 23 | 2026-11-23 | קליטת פניות: Edge Function `submit-lead` (ולידציה, honeypot, Turnstile, 5 לשעה לכתובת IP, זיהוי כפילות לפי טלפון), התראת מייל ללא תשובות רגישות | טופס ישיר ל-DB | אבטחה + פרטיות |
+| 24 | 2026-11-23 | אזהרות Advisor פתוחות במודע: תוקף קישור הזמנה 24 שעות (עד שקורל נכנסת, ואז חוזר לשעה); בדיקת סיסמאות דלופות זמינה רק ב-Pro | — | זמני / מגבלת תוכנית |
