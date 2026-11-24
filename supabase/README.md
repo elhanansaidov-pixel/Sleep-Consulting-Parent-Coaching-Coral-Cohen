@@ -32,3 +32,11 @@ Signup disabled · TOTP MFA enabled · password ≥ 12 chars with lower/upper/di
 - `submit-lead` (public, `verify_jwt=false`) — website questionnaire intake. Secrets: `TURNSTILE_SECRET`, `SMTP_USER`, `SMTP_PASSWORD`, `NOTIFY_TO`, `ADMIN_URL`, `IP_HASH_SALT` (set in Supabase, never in the repo).
 - Deploy: `POST /v1/projects/{ref}/functions/deploy?slug=submit-lead` (multipart: metadata + index.ts).
 - Testing note: Cloudflare Turnstile does not issue tokens to headless browsers. The success path was tested with a temporary, key-protected copy of the function that was deleted right after.
+- `daily-digest` (`verify_jwt=false`, protected by `x-digest-key` = `DIGEST_KEY` secret = Vault secret `digest_key`) — morning email to the owner. Scheduled by pg_cron job `daily-digest` (`30 5 * * *` UTC). Skips sending on empty days.
+
+## Scheduled jobs (pg_cron)
+- `daily-digest` — 05:30 UTC daily → `net.http_post` to the function.
+- `purge-old-leads` — 03:15 UTC daily → `private.purge_old_leads()` (12-month retention for leads that never became a family; logged in `audit_log`).
+
+## Testing note (stage D)
+`tests/e2e/crm-flow.cjs` covers lead → family → deal → program → session → task → kanban (keyboard) → payment → settings, with a synthetic owner and lead that are deleted afterwards. Digest emails in tests go to the technical admin (NOTIFY_TO is switched temporarily and restored).

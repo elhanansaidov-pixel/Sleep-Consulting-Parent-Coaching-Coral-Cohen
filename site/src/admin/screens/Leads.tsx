@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { supabase, type Role } from '../lib/supabase';
 import { steps as qSteps } from '../../data/questionnaire';
+import { TaskPanel } from './Tasks';
 
 type Stage = { id: string; name: string; position: number; kind: 'open' | 'won' | 'lost' };
 type Lead = {
   id: string; created_at: string; parent_name: string; phone: string; phone_normalized: string; email: string | null;
   child_age: string | null; stage_id: string | null; priority: 'low' | 'normal' | 'high';
   next_follow_up_at: string | null; duplicate_of: string | null; answers: Record<string, string>;
-  consent_at: string; signed_name: string; first_contact_at: string | null;
+  consent_at: string; signed_name: string; first_contact_at: string | null; client_id: string | null;
 };
 type Activity = { id: string; kind: string; body: string | null; created_at: string; actor: string | null };
 
@@ -199,6 +200,16 @@ export function LeadDetailScreen({ id, role }: { id: string; role: Role }) {
     load();
   }
 
+  async function convert() {
+    if (!lead) return;
+    const raw = prompt('הפיכה למשפחה: נוצרים כרטיס משפחה ועסקה.\nסכום העסקה בש"ח (אפשר להשאיר ריק ולעדכן אחר כך):', '');
+    if (raw === null) return;
+    const amount = raw.trim() ? Number(raw.replace(/[^\d.]/g, '')) : null;
+    const { data, error } = await supabase.rpc('convert_lead', { p_lead: lead.id, p_amount: amount });
+    if (error || !data) return flash('ההמרה נכשלה');
+    window.location.hash = `#/clients/${data}`;
+  }
+
   async function remove() {
     if (!lead) return;
     const typed = prompt(`מחיקה לצמיתות של הפנייה ושל כל המידע שבה.\nכדי לאשר, הקלידו את שם ההורה: ${lead.parent_name}`);
@@ -227,6 +238,11 @@ export function LeadDetailScreen({ id, role }: { id: string; role: Role }) {
           {lead.email && <a className="cbtn" href={`mailto:${lead.email}`}>מייל</a>}
         </div>
       </header>
+      {lead.client_id ? (
+        <p className="notice">הפנייה הפכה למשפחה. <a href={`#/clients/${lead.client_id}`}>לכרטיס המשפחה</a></p>
+      ) : owner && (
+        <p className="notice notice--action"><span>מתאים? אפשר להפוך את הפנייה למשפחה ולפתוח עסקה.</span><button className="cbtn cbtn--primary cbtn--sm" onClick={convert}>הפיכה למשפחה</button></p>
+      )}
       {lead.duplicate_of && <p className="notice">הורה זה כבר מילא שאלון בעבר. <a href={`#/leads/${lead.duplicate_of}`}>לפנייה הקודמת</a></p>}
       <p className="toast" role="status" aria-live="polite">{msg}</p>
 
@@ -284,6 +300,7 @@ export function LeadDetailScreen({ id, role }: { id: string; role: Role }) {
             </ol>
           </section>
 
+          <TaskPanel scope={{ lead_id: lead.id }} role={role} />
           {owner && <button className="cbtn cbtn--danger" onClick={remove}>מחיקת הפנייה</button>}
         </aside>
       </div>

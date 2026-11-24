@@ -2,8 +2,12 @@ import { useEffect, useState, type ReactElement } from 'react';
 import { useAuthState, clearNeedsPassword } from './auth/useAuthState';
 import { LoginScreen, SetPasswordScreen, MfaEnrollScreen, MfaChallengeScreen, NoAccessScreen } from './auth/AuthScreens';
 import { Shell, NAV, type RouteId } from './layout/Shell';
-import { DashboardScreen, PlaceholderScreen, SettingsScreen } from './screens/Screens';
+import { DashboardScreen, SettingsScreen } from './screens/Screens';
 import { LeadsScreen, LeadDetailScreen } from './screens/Leads';
+import { ClientsScreen, ClientDetailScreen } from './screens/Clients';
+import { DealsScreen } from './screens/Deals';
+import { ProgramsScreen, ProgramDetailScreen } from './screens/Programs';
+import { TasksScreen } from './screens/Tasks';
 import './admin.css';
 
 function useHashRoute(): { route: RouteId; param: string } {
@@ -39,10 +43,10 @@ export default function App() {
   const screens: Record<RouteId, ReactElement> = {
     dashboard: <DashboardScreen />,
     leads: param ? <LeadDetailScreen key={param} id={param} role={stage.role} /> : <LeadsScreen role={stage.role} />,
-    clients: <PlaceholderScreen title="משפחות" stage="D" text="כרטיס לכל משפחה: פרטים, הערות, תגיות והיסטוריית פעילות." />,
-    deals: <PlaceholderScreen title="עסקאות" stage="D" text="לוח Kanban עם גרירה בין שלבים, סכומים וסטטוס תשלום." />,
-    programs: <PlaceholderScreen title="תהליכים" stage="D" text="מעקב ייעוץ שינה (שבוע 1–8, שלב 1–4) ומפגשי הדרכת הורים." />,
-    tasks: <PlaceholderScreen title="משימות" stage="D" text="משימות ותזכורות, כולל מייל בוקר עם משימות היום ומשימות באיחור." />,
+    clients: param ? <ClientDetailScreen key={param} id={param} role={stage.role} /> : <ClientsScreen />,
+    deals: <DealsScreen role={stage.role} />,
+    programs: param ? <ProgramDetailScreen key={param} id={param} role={stage.role} /> : <ProgramsScreen />,
+    tasks: <TasksScreen role={stage.role} />,
     settings: <SettingsScreen role={stage.role} />,
   };
 

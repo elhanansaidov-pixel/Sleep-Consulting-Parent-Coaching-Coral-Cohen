@@ -19,7 +19,7 @@ function Empty({ title, text }: { title: string; text: string }) {
   );
 }
 
-type Counts = { leads: number; clients: number; programs: number; tasks: number };
+type Counts = { leads: number; clients: number; programs: number; tasks: number; overdue: number };
 
 export function DashboardScreen() {
   const [counts, setCounts] = useState<Counts | null>(null);
@@ -27,22 +27,28 @@ export function DashboardScreen() {
   useEffect(() => {
     (async () => {
       const q = (t: string) => supabase.from(t).select('id', { count: 'exact', head: true });
-      const [l, c, p, t] = await Promise.all([q('leads'), q('clients'), q('programs'), q('tasks')]);
-      if (l.error || c.error || p.error || t.error) return setErr(true);
-      setCounts({ leads: l.count ?? 0, clients: c.count ?? 0, programs: p.count ?? 0, tasks: t.count ?? 0 });
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const [l, c, p, t, o] = await Promise.all([
+        q('leads'), q('clients'),
+        supabase.from('programs').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+        supabase.from('tasks').select('id', { count: 'exact', head: true }).eq('status', 'open'),
+        supabase.from('tasks').select('id', { count: 'exact', head: true }).eq('status', 'open').lt('due_at', today.toISOString()),
+      ]);
+      if (l.error || c.error || p.error || t.error || o.error) return setErr(true);
+      setCounts({ leads: l.count ?? 0, clients: c.count ?? 0, programs: p.count ?? 0, tasks: t.count ?? 0, overdue: o.count ?? 0 });
     })();
   }, []);
-  const tiles: [keyof Counts, string][] = [['leads', 'פניות'], ['clients', 'משפחות'], ['programs', 'תהליכים'], ['tasks', 'משימות']];
+  const tiles: [keyof Counts, string, string][] = [['leads', 'פניות', '#/leads'], ['clients', 'משפחות', '#/clients'], ['programs', 'תהליכים פעילים', '#/programs'], ['tasks', 'משימות פתוחות', '#/tasks'], ['overdue', 'משימות באיחור', '#/tasks']];
   return (
     <>
-      <PageHead title="לוח בקרה" lead="נתונים אמיתיים מהמערכת. גרפים והשוואות יתווספו בשלב E." />
+      <PageHead title="לוח בקרה" lead="נתונים אמיתיים מהמערכת. גרפים והשוואות בין תקופות יתווספו בשלב E." />
       {err && <p className="field__err" role="alert">לא הצלחנו לטעון נתונים.</p>}
       <div className="tiles">
-        {tiles.map(([k, label]) => (
-          <div className="tile" key={k}>
+        {tiles.map(([k, label, href]) => (
+          <a className={`tile tile--link${k === 'overdue' && counts?.overdue ? ' tile--alert' : ''}`} key={k} href={href}>
             <p className="tile__label">{label}</p>
             <p className="tile__value">{counts ? counts[k] : '—'}</p>
-          </div>
+          </a>
         ))}
       </div>
     </>
@@ -63,27 +69,76 @@ const KIND_LABEL = { open: 'פתוח', won: 'נסגר בהצלחה', lost: 'לא
 
 export function SettingsScreen({ role }: { role: Role }) {
   const [stages, setStages] = useState<Stage[] | null>(null);
-  useEffect(() => {
-    supabase.from('pipeline_stages').select('id,name,position,kind').order('position').then(({ data }) => setStages((data as Stage[]) ?? []));
-  }, []);
+  const [msg, setMsg] = useState('');
+  const [newName, setNewName] = useState('');
+  const load = () => supabase.from('pipeline_stages').select('id,name,position,kind').order('position').then(({ data }) => setStages((data as Stage[]) ?? []));
+  useEffect(() => { load(); }, []);
+  const flash = (t: string) => { setMsg(t); setTimeout(() => setMsg(''), 2500); };
+
+  async function rename(s: Stage, name: string) {
+    const v = name.trim();
+    if (!v || v === s.name) return;
+    const { error } = await supabase.from('pipeline_stages').update({ name: v }).eq('id', s.id);
+    flash(error ? 'השמירה נכשלה' : 'נשמר');
+    load();
+  }
+  async function add(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const name = String(new FormData(e.currentTarget).get('stage_name') ?? '').trim();
+    const { data: fresh } = await supabase.from('pipeline_stages').select('id,name,position,kind').order('position');
+    const stages = (fresh as Stage[] | null) ?? [];
+    if (!name) return;
+    // new open stage goes right before the first closed (won/lost) stage
+    const firstClosed = stages.find((s) => s.kind !== 'open');
+    const pos = firstClosed ? firstClosed.position : (stages.at(-1)?.position ?? 0) + 1;
+    for (const s of [...stages].filter((x) => x.position >= pos).sort((a, b) => b.position - a.position)) {
+      await supabase.from('pipeline_stages').update({ position: s.position + 1 }).eq('id', s.id);
+    }
+    const { error } = await supabase.from('pipeline_stages').insert({ name, position: pos, kind: 'open' });
+    flash(error ? 'ההוספה נכשלה' : 'השלב נוסף');
+    setNewName('');
+    load();
+  }
+  async function remove(s: Stage) {
+    const [{ count: l }, { count: d }] = await Promise.all([
+      supabase.from('leads').select('id', { count: 'exact', head: true }).eq('stage_id', s.id),
+      supabase.from('deals').select('id', { count: 'exact', head: true }).eq('stage_id', s.id),
+    ]);
+    if ((l ?? 0) + (d ?? 0) > 0) return flash('יש פניות או עסקאות בשלב הזה. העבירו אותן קודם.');
+    if (!confirm(`למחוק את השלב "${s.name}"?`)) return;
+    const { error } = await supabase.from('pipeline_stages').delete().eq('id', s.id);
+    flash(error ? 'המחיקה נכשלה' : 'השלב נמחק');
+    load();
+  }
+
   return (
     <>
-      <PageHead title="הגדרות" lead={role === 'owner' ? 'שלבי לוח המכירות. העריכה תיפתח בשלב D.' : 'מצב תצוגה למנהל טכני.'} />
+      <PageHead title="הגדרות" lead="שלבי לוח המכירות משותפים לפניות ולעסקאות." />
+      <p className="toast" role="status" aria-live="polite">{msg}</p>
       <section className="card" aria-labelledby="stages-h">
         <h2 id="stages-h" className="card__title">שלבי לוח המכירות</h2>
-        {!stages ? (
-          <p className="muted">טוען…</p>
-        ) : (
+        {!stages ? <p className="muted">טוען…</p> : (
           <ol className="stages">
             {stages.map((s) => (
               <li key={s.id}>
                 <span className="stages__pos">{s.position}</span>
-                <span className="stages__name">{s.name}</span>
-                <span className={`chip chip--${s.kind}`}>{KIND_LABEL[s.kind]}</span>
+                <span>
+                  <label className="sr-only" htmlFor={`st-${s.id}`}>שם השלב {s.position}</label>
+                  <input id={`st-${s.id}`} className="input stages__input" defaultValue={s.name} maxLength={60} onBlur={(e) => rename(s, e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />
+                </span>
+                <span className="stages__end">
+                  <span className={`chip chip--${s.kind}`}>{KIND_LABEL[s.kind]}</span>
+                  {role === 'owner' && s.kind === 'open' && <button className="cbtn cbtn--ghost cbtn--sm" onClick={() => remove(s)} aria-label={`מחיקת השלב ${s.name}`}>מחיקה</button>}
+                </span>
               </li>
             ))}
           </ol>
         )}
+        <form className="stage-add" onSubmit={add}>
+          <label className="sr-only" htmlFor="st-new">שלב חדש</label>
+          <input id="st-new" name="stage_name" className="input" placeholder="שם לשלב חדש…" maxLength={60} value={newName} onChange={(e) => setNewName(e.target.value)} />
+          <button className="cbtn" disabled={!newName.trim()}>הוספת שלב</button>
+        </form>
       </section>
     </>
   );
