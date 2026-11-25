@@ -41,6 +41,7 @@ function initHero(lowData: boolean) {
   const morning = hero.querySelector<HTMLElement>('[data-hero-morning]');
   const video = hero.querySelector<HTMLVideoElement>('[data-hero-video]');
   const copy = hero.querySelector<HTMLElement>('.hero__copy');
+  const cue = hero.querySelector<HTMLElement>('[data-hero-cue]');
 
   // The film's light change happens early; remap scroll so the transition fills most of the scroll.
   const remap = (p: number) => (p < 0.75 ? (p / 0.75) * 0.55 : 0.55 + ((p - 0.75) / 0.25) * 0.45);
@@ -70,6 +71,7 @@ function initHero(lowData: boolean) {
       } else if (morning) {
         morning.style.opacity = String(gsap.utils.clamp(0, 1, (p - 0.15) / 0.6));
       }
+      if (cue) cue.style.opacity = String(1 - gsap.utils.clamp(0, 1, p / 0.15));
       if (copy) {
         const out = gsap.utils.clamp(0, 1, (p - 0.55) / 0.35);
         copy.style.opacity = String(1 - out);
