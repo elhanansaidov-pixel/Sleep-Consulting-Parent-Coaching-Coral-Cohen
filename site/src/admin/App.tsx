@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from 'react';
 import { useAuthState, clearNeedsPassword } from './auth/useAuthState';
-import { LoginScreen, SetPasswordScreen, MfaEnrollScreen, MfaChallengeScreen, NoAccessScreen } from './auth/AuthScreens';
+import { ConfirmLinkScreen, LoginScreen, SetPasswordScreen, MfaEnrollScreen, MfaChallengeScreen, NoAccessScreen } from './auth/AuthScreens';
 import { Shell, NAV, type RouteId } from './layout/Shell';
 import { SettingsScreen } from './screens/Screens';
 import { DashboardScreen } from './screens/Dashboard';
@@ -36,6 +36,7 @@ export default function App() {
   if (stage.kind === 'loading') {
     return <div className="boot"><span className="spinner" aria-label="טוען" /></div>;
   }
+  if (stage.kind === 'confirm-link') return <ConfirmLinkScreen tokenHash={stage.tokenHash} type={stage.type} onDone={refresh} />;
   if (stage.kind === 'signed-out') return <LoginScreen />;
   if (stage.kind === 'set-password') return <SetPasswordScreen onDone={() => { clearNeedsPassword(); refresh(); }} />;
   if (stage.kind === 'mfa-enroll') return <MfaEnrollScreen onDone={refresh} />;

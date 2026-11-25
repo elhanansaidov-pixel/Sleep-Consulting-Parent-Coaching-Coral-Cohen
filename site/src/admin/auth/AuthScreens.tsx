@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { supabase, authErrorMessage } from '../lib/supabase';
+import { clearPendingLink, markNeedsPassword } from './useAuthState';
 
 function AuthCard({ title, lead, children }: { title: string; lead?: string; children: React.ReactNode }) {
   return (
@@ -95,6 +96,41 @@ function ForgotPassword({ onBack }: { onBack: () => void }) {
   );
 }
 
+/** Landing screen for one-time links: nothing is consumed until the button is pressed. */
+export function ConfirmLinkScreen({ tokenHash, type, onDone }: { tokenHash: string; type: 'invite' | 'recovery'; onDone: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+
+  async function go() {
+    setBusy(true);
+    setErr('');
+    await supabase.auth.signOut({ scope: 'local' }); // a different user may be signed in on this device
+    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
+    setBusy(false);
+    if (error) {
+      setErr('הקישור כבר נוצל או שפג תוקפו. אפשר לבקש קישור חדש במסך הכניסה, בכפתור "שכחתי סיסמה".');
+      return;
+    }
+    markNeedsPassword();
+    clearPendingLink();
+    onDone();
+  }
+
+  return (
+    <AuthCard
+      title={type === 'invite' ? 'ברוכה הבאה למערכת' : 'בחירת סיסמה חדשה'}
+      lead={type === 'invite' ? 'בשלב הראשון בוחרים סיסמה, ואחר כך מחברים אפליקציית אימות בטלפון.' : 'לחצי על הכפתור כדי לבחור סיסמה חדשה.'}
+    >
+      <ErrorLine text={err} />
+      {err ? (
+        <button className="cbtn cbtn--primary cbtn--block" onClick={() => { clearPendingLink(); onDone(); }}>למסך הכניסה</button>
+      ) : (
+        <button className="cbtn cbtn--primary cbtn--block" onClick={go} disabled={busy}>{busy ? 'רגע…' : 'המשך לבחירת סיסמה'}</button>
+      )}
+    </AuthCard>
+  );
+}
+
 export function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -129,6 +165,7 @@ export function LoginScreen() {
         </button>
       </form>
       <button className="cbtn cbtn--ghost cbtn--block" onClick={() => setForgot(true)}>שכחתי סיסמה</button>
+      <p className="auth__hint">כניסה ראשונה? עדיין אין לך סיסמה. פתחי את הקישור שקיבלת במייל, או לחצי "שכחתי סיסמה" ויישלח קישור חדש.</p>
     </AuthCard>
   );
 }

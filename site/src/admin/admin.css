@@ -64,6 +64,7 @@
 /* auth */
 .auth { min-height: 100vh; min-height: 100svh; display: grid; place-content: center; padding: 1.5rem 1rem; gap: 1rem; }
 .auth__card { width: min(26rem, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 2rem 1.75rem; box-shadow: var(--shadow); }
+.auth__hint { margin: 1rem 0 0; font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
 .auth__brand { direction: ltr; text-align: right; color: var(--muted); margin: 0 0 1.5rem; font-family: var(--font-brand); font-size: 1.15rem; letter-spacing: 0.01em; }
 .auth__title { font-size: 1.6rem; margin-bottom: 0.35rem; }
 .auth__lead { color: var(--muted); margin: 0 0 1.5rem; }
