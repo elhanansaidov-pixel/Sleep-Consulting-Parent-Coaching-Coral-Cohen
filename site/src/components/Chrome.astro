@@ -62,6 +62,13 @@ const year = new Date().getFullYear();
   .topbar__nav a { text-decoration: none; }
   .topbar__cta { border: 1px solid currentColor; border-radius: 4px; padding: 0.5rem 1.1rem; }
   @media (max-width: 760px) { .topbar__nav a:not(.topbar__cta) { display: none; } .topbar__cta { display: none; } }
+  @media (min-width: 1024px) {
+    .topbar__in { width: min(100% - 2 * clamp(1.5rem, 3vw, 3rem), 1680px); min-height: 5.25rem; }
+    .topbar__name { font-size: 2.1rem; }
+    .topbar__tag { font-size: 0.95rem; margin-top: 0.15rem; }
+    .topbar__nav { gap: 2rem; font-size: 1.08rem; }
+    .topbar__cta { padding: 0.6rem 1.3rem; }
+  }
 
   .footer { background: var(--night); color: rgba(254, 250, 244, 0.85); padding-block: var(--space-l) calc(var(--space-m) + 5rem); }
   .footer__in { display: grid; gap: 1.5rem; }
