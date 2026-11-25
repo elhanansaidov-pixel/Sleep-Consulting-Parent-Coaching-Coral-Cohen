@@ -93,7 +93,7 @@
 .side__role { margin: 0 0 0.5rem; color: var(--sand); font-size: 0.85rem; }
 .side .cbtn--ghost { color: rgba(254, 250, 244, 0.7); padding: 0; }
 .side .cbtn--ghost:hover { background: none; color: var(--accent-ink); border-color: transparent; }
-.main { padding: 2rem clamp(1rem, 3vw, 2.5rem) 3rem; outline: none; max-width: 80rem; width: 100%; }
+.main { padding: 2rem clamp(1rem, 3vw, 2.5rem) 3rem; outline: none; max-width: 80rem; width: 100%; min-width: 0; }
 .topm, .bottom { display: none; }
 
 .phead { margin-bottom: 1.5rem; }
@@ -385,3 +385,16 @@ textarea.input { padding: 0.6rem 0.75rem; width: 100%; resize: vertical; line-he
 .asst__learn { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
 .asst__learn li { line-height: 1.5; }
 .asst__learn .cbtn { margin-inline-start: 0.35rem; }
+
+/* ── demo mode ─────────────────────────────────────────────── */
+.demo-bar {
+  position: sticky; top: 0; z-index: 30; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;
+  min-height: 2.6rem; padding: 0.35rem 1rem; background: #fff1cc; color: #5a4300; border-bottom: 1px solid #e8cf8a; font-size: 0.88rem;
+}
+.demo-bar .cbtn { background: #fff; }
+.demo-bar .actions { display: flex; flex-wrap: nowrap; gap: 0.4rem; }
+@media (max-width: 880px) {
+  .demo-bar ~ .shell .topm { top: 2.6rem; }
+  .demo-bar { font-size: 0.85rem; }
+  .demo-bar__more { display: none; }
+}

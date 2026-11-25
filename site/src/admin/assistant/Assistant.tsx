@@ -6,10 +6,11 @@ import { TOURS } from './tours';
 import { TourHost, startTour } from './Tour';
 import { setUsageEnabled, track, USAGE_EVENT, type UsageRow } from './usage';
 import { installInstrumentation } from './instrument';
+import { storeKey } from '../demo/flag';
 import { computeProfile, syncProfile, type Profile } from './profile';
 import { dismiss, loadSnapshot, pickTip, TOPIC_LABEL, type DataSnapshot, type Tip } from './tips';
 
-const WELCOMED = 'cc-assistant-welcomed';
+const WELCOMED = storeKey('cc-assistant-welcomed');
 const SCREEN_LABEL: Record<string, string> = {
   dashboard: 'לוח בקרה', leads: 'פניות', clients: 'משפחות', deals: 'עסקאות', programs: 'תהליכים', tasks: 'משימות', settings: 'הגדרות', help: 'מדריך',
 };

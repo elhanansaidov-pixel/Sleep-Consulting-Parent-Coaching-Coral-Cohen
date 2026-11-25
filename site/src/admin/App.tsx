@@ -11,6 +11,7 @@ import { ProgramsScreen, ProgramDetailScreen } from './screens/Programs';
 import { TasksScreen } from './screens/Tasks';
 import { HelpScreen } from './screens/Help';
 import './admin.css';
+import { isDemo, resetDemo, exitDemo } from './demo/flag';
 
 function useHashRoute(): { route: RouteId; param: string } {
   const read = () => {
@@ -54,9 +55,21 @@ export default function App() {
     help: <HelpScreen />,
   };
 
+  const demo = isDemo();
   return (
+    <>
+    {demo && (
+      <div className="demo-bar" role="status">
+        <span><b>מצב דמו</b><span className="demo-bar__more"> · נתונים לדוגמה, נשמרים רק בדפדפן הזה ולא נוגעים במערכת</span></span>
+        <span className="actions">
+          <button type="button" className="cbtn cbtn--sm" onClick={resetDemo}>איפוס</button>
+          <button type="button" className="cbtn cbtn--sm" onClick={exitDemo}>יציאה</button>
+        </span>
+      </div>
+    )}
     <Shell route={route} name={stage.name} role={stage.role} assistant={stage.assistant}>
       {screens[route]}
     </Shell>
+    </>
   );
 }

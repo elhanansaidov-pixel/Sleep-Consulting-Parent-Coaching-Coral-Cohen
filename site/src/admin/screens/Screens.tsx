@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase, type Role } from '../lib/supabase';
 import { AutomationsPanel, DeviceNotifications } from './Automations';
+import { isDemo } from '../demo/flag';
 
 function PageHead({ title, lead }: { title: string; lead?: string }) {
   return (
@@ -109,6 +110,13 @@ export function SettingsScreen({ role }: { role: Role }) {
         <DeviceNotifications />
         <AutomationsPanel role={role} />
       </div>
+      {role === 'tech_admin' && !isDemo() && (
+        <section className="card" aria-labelledby="demo-h">
+          <h2 id="demo-h" className="card__title">מצב דמו</h2>
+          <p className="muted">המערכת המלאה עם משפחות לדוגמה, להדגמה ולבדיקות. הנתונים נשמרים רק בדפדפן ולא נוגעים במערכת האמיתית. (רק מנהל טכני רואה את הקישור הזה.)</p>
+          <a className="cbtn" href="/admin?demo=1" target="_blank" rel="noopener">פתיחת מצב דמו</a>
+        </section>
+      )}
     </>
   );
 }

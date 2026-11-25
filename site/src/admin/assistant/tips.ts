@@ -6,11 +6,12 @@
 import { supabase } from '../lib/supabase';
 import type { Profile } from './profile';
 import { localUsage } from './usage';
+import { storeKey } from '../demo/flag';
 
 export type Tip = { key: string; text: string; tour?: string; href?: string; priority: number };
 export type DataSnapshot = { waitingLeads: number; overdueTasks: number; sessionsWithoutSummary: number; deals: number; leads: number };
 
-const DISMISSED = 'cc-tips-dismissed';
+const DISMISSED = () => storeKey('cc-tips-dismissed');
 const day = () => new Date().toISOString().slice(0, 10);
 export const TOPIC_LABEL: Record<string, string> = {
   'new-lead': 'טיפול בפנייה', convert: 'הפיכה למשפחה', 'deals-drag': 'לוח העסקאות', payment: 'רישום תשלום',
@@ -19,11 +20,11 @@ export const TOPIC_LABEL: Record<string, string> = {
 };
 
 export function dismissed(): Set<string> {
-  try { return new Set(JSON.parse(localStorage.getItem(DISMISSED) || '[]')); } catch { return new Set(); }
+  try { return new Set(JSON.parse(localStorage.getItem(DISMISSED()) || '[]')); } catch { return new Set(); }
 }
 export function dismiss(key: string) {
   const s = dismissed(); s.add(key);
-  try { localStorage.setItem(DISMISSED, JSON.stringify([...s].slice(-300))); } catch { /* ignore */ }
+  try { localStorage.setItem(DISMISSED(), JSON.stringify([...s].slice(-300))); } catch { /* ignore */ }
 }
 
 /** Counts only — no names or content leave the database query. */

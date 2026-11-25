@@ -1,14 +1,19 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config';
+import { isDemo } from '../demo/flag';
+import { createDemoClient } from '../demo/client';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    storageKey: 'cc-crm-auth',
-  },
-});
+// Demo mode (/admin?demo=1) swaps in an in-browser stand-in: sample data only, no network, no real login.
+export const supabase: SupabaseClient = isDemo()
+  ? (createDemoClient() as unknown as SupabaseClient)
+  : createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storageKey: 'cc-crm-auth',
+      },
+    });
 
 export type Role = 'owner' | 'tech_admin';
 
