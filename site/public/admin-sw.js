@@ -13,6 +13,9 @@ self.addEventListener('push', (event) => {
     dir: 'rtl',
     lang: 'he',
     tag: data.url,
+    renotify: true,              // alert again (sound/vibration) even if a notification with this tag is showing
+    vibrate: [200, 100, 200],    // Android: vibrate like a message
+    silent: false,
     data: { url: data.url },
   }));
 });
