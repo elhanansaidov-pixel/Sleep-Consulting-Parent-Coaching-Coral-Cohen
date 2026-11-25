@@ -99,7 +99,7 @@ function Columns({ title, data, format, empty }: { title: string; data: { label:
         </table>
       ) : (
         <div className="chart__wrap" dir="ltr">
-          <svg viewBox={`0 0 ${W} ${H}`}  role="img" aria-label={`${title}: גרף עמודות. לפירוט מלא עברו לתצוגת טבלה.`}>
+          <svg viewBox={`0 0 ${W} ${H}`}  role="group" aria-label={`${title}: גרף עמודות. לפירוט מלא עברו לתצוגת טבלה.`}>
             {ticks.map((t) => (
               <g key={t}>
                 <line x1={padL} x2={W} y1={y(t)} y2={y(t)} className="chart__grid" />
@@ -114,7 +114,7 @@ function Columns({ title, data, format, empty }: { title: string; data: { label:
                   {d.value > 0 && <path d={roundTop(cx - bw / 2, y(d.value), bw, h, Math.min(4, h))} className={`chart__bar${hover === i ? ' chart__bar--hover' : ''}`} />}
                   {i % labelEvery === 0 && <text x={cx} y={H - 8} className="chart__tick" textAnchor="middle">{d.label}</text>}
                   <rect x={padL + band * i} y={padT} width={band} height={H - padT - padB} fill="transparent"
-                    tabIndex={0} aria-label={`${d.label}: ${format(d.value)}`}
+                    role="img" tabIndex={0} aria-label={`${d.label}: ${format(d.value)}`}
                     onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} onFocus={() => setHover(i)} onBlur={() => setHover(null)} />
                 </g>
               );

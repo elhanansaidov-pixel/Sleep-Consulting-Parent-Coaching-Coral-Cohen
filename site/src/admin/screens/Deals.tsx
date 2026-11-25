@@ -27,22 +27,26 @@ const columnJump: KeyboardCoordinateGetter = (event, { context: { active, droppa
 function Card({ d, canDrag, onOpen }: { d: Deal; canDrag: boolean; onOpen: () => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: d.id, disabled: !canDrag });
   return (
-    <div
-      ref={setNodeRef}
-      className={`kcard${isDragging ? ' kcard--drag' : ''}`}
-      style={{ transform: CSS.Translate.toString(transform) }}
-      {...attributes}
-      {...listeners}
-      aria-roledescription="כרטיס עסקה הניתן לגרירה"
-      aria-label={`${d.clients?.parent_names ?? ''}, ${d.title ?? SERVICE[d.service]}, ${money(d.amount)}`}
-    >
-      <span className="kcard__name">{d.clients?.parent_names}</span>
-      <span className="kcard__meta">{d.title ?? SERVICE[d.service]}</span>
-      <span className="kcard__foot">
-        <b>{money(d.amount)}</b>
-        <span className={`chip chip--pay-${d.payment_status}`}>{PAYMENT[d.payment_status]}</span>
-      </span>
-      <button type="button" className="kcard__open" onPointerDown={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} onClick={onOpen}>פרטים</button>
+    <div className={`kcard-wrap${isDragging ? ' kcard-wrap--drag' : ''}`}>
+      <div
+        ref={setNodeRef}
+        className={`kcard${isDragging ? ' kcard--drag' : ''}`}
+        style={{ transform: CSS.Translate.toString(transform) }}
+        {...attributes}
+        {...listeners}
+        aria-roledescription="כרטיס עסקה הניתן לגרירה"
+        aria-label={`${d.clients?.parent_names ?? ''}, ${d.title ?? SERVICE[d.service]}, ${money(d.amount)}, ${PAYMENT[d.payment_status]}`}
+      >
+        <span className="kcard__name">{d.clients?.parent_names}</span>
+        <span className="kcard__meta">{d.title ?? SERVICE[d.service]}</span>
+        <span className="kcard__foot">
+          <b>{money(d.amount)}</b>
+          <span className={`chip chip--pay-${d.payment_status}`}>{PAYMENT[d.payment_status]}</span>
+        </span>
+      </div>
+      {!isDragging && (
+        <button type="button" className="kcard__open" onClick={onOpen} aria-label={`פרטי העסקה של ${d.clients?.parent_names ?? ''}`}>פרטים</button>
+      )}
     </div>
   );
 }

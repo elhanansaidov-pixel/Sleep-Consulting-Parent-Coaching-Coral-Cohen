@@ -1,0 +1,9 @@
+-- 0012_fk_indexes.sql — cover foreign keys (performance advisor: unindexed_foreign_keys)
+create index if not exists activities_actor_idx        on public.activities (actor);
+create index if not exists clients_from_lead_idx       on public.clients (created_from_lead_id);
+create index if not exists lead_views_lead_idx         on public.lead_views (lead_id);
+create index if not exists leads_client_idx            on public.leads (client_id);
+create index if not exists leads_duplicate_of_idx      on public.leads (duplicate_of);
+create index if not exists programs_deal_idx           on public.programs (deal_id);
+create index if not exists push_subscriptions_user_idx on public.push_subscriptions (user_id);
+create index if not exists tasks_deal_idx              on public.tasks (deal_id);

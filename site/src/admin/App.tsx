@@ -9,6 +9,7 @@ import { ClientsScreen, ClientDetailScreen } from './screens/Clients';
 import { DealsScreen } from './screens/Deals';
 import { ProgramsScreen, ProgramDetailScreen } from './screens/Programs';
 import { TasksScreen } from './screens/Tasks';
+import { HelpScreen } from './screens/Help';
 import './admin.css';
 
 function useHashRoute(): { route: RouteId; param: string } {
@@ -49,6 +50,7 @@ export default function App() {
     programs: param ? <ProgramDetailScreen key={param} id={param} role={stage.role} /> : <ProgramsScreen />,
     tasks: <TasksScreen role={stage.role} />,
     settings: <SettingsScreen role={stage.role} />,
+    help: <HelpScreen />,
   };
 
   return (

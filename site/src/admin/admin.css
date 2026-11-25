@@ -305,3 +305,13 @@ textarea.input { padding: 0.6rem 0.75rem; width: 100%; resize: vertical; line-he
 .howto li { margin-bottom: 0.25rem; }
 .nudge { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; background: #fbf3e4; border: 1px solid #ead7b0; border-radius: var(--radius); padding: 0.75rem 1rem; margin-bottom: 1rem; }
 .nudge p { margin: 0; flex: 1 1 22rem; }
+.help-toc { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.help-toc a { padding: 0.35rem 0.75rem; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink); text-decoration: none; font-size: 0.9rem; background: var(--surface); }
+.help { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+@media (max-width: 1000px) { .help { grid-template-columns: 1fr; } }
+.help ul { margin: 0; padding-inline-start: 1.1rem; display: grid; gap: 0.5rem; }
+.topm .actions { gap: 0.25rem; }
+.topm a.cbtn--ghost { color: rgba(254, 250, 244, 0.75); text-decoration: none; }
+.kcard-wrap { position: relative; }
+.kcard-wrap--drag { z-index: 5; }
+.kcard { padding-inline-end: 3.2rem; }

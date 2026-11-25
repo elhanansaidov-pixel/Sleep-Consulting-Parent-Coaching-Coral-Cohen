@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { supabase, ROLE_LABEL, type Role } from '../lib/supabase';
 
-export type RouteId = 'dashboard' | 'leads' | 'clients' | 'deals' | 'programs' | 'tasks' | 'settings';
+export type RouteId = 'dashboard' | 'leads' | 'clients' | 'deals' | 'programs' | 'tasks' | 'settings' | 'help';
 
 export const NAV: { id: RouteId; label: string; icon: string }[] = [
   { id: 'dashboard', label: 'לוח בקרה', icon: 'M3 13h8V3H3v10Zm0 8h8v-6H3v6Zm10 0h8V11h-8v10Zm0-18v6h8V3h-8Z' },
@@ -10,6 +10,7 @@ export const NAV: { id: RouteId; label: string; icon: string }[] = [
   { id: 'deals', label: 'עסקאות', icon: 'M3 5h4v14H3V5Zm7 0h4v9h-4V5Zm7 0h4v6h-4V5Z' },
   { id: 'programs', label: 'תהליכים', icon: 'M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 10.41V6h-2v7.24l5.12 3.07 1-1.65Z' },
   { id: 'tasks', label: 'משימות', icon: 'M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17Z' },
+  { id: 'help', label: 'מדריך', icon: 'M11 18h2v-2h-2v2Zm1-16a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Zm0-14a4 4 0 0 0-4 4h2a2 2 0 1 1 4 0c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5a4 4 0 0 0-4-4Z' },
   { id: 'settings', label: 'הגדרות', icon: 'M19.14 12.94a7.07 7.07 0 0 0 0-1.88l2.03-1.58-1.92-3.32-2.39.96a7 7 0 0 0-1.63-.94L14.87 3h-3.84l-.36 2.18a7 7 0 0 0-1.63.94l-2.39-.96-1.92 3.32 2.03 1.58a7.07 7.07 0 0 0 0 1.88L4.73 14.52l1.92 3.32 2.39-.96a7 7 0 0 0 1.63.94l.36 2.18h3.84l.36-2.18a7 7 0 0 0 1.63-.94l2.39.96 1.92-3.32-2.03-1.58ZM12.95 15.5a3.5 3.5 0 1 1 3.5-3.5 3.5 3.5 0 0 1-3.5 3.5Z' },
 ];
 
@@ -52,7 +53,10 @@ export function Shell({ route, name, role, children }: { route: RouteId; name: s
 
       <header className="topm">
         <span className="side__name">coral cohen</span>
-        <button className="cbtn cbtn--ghost cbtn--sm" onClick={() => supabase.auth.signOut()}>יציאה</button>
+        <span className="actions">
+          <a className="cbtn cbtn--ghost cbtn--sm" href="#/help">מדריך</a>
+          <button className="cbtn cbtn--ghost cbtn--sm" onClick={() => supabase.auth.signOut()}>יציאה</button>
+        </span>
       </header>
 
       <main className="main" id="main" tabIndex={-1}>{children}</main>
