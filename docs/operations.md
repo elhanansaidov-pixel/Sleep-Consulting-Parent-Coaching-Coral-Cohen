@@ -42,7 +42,7 @@ npx wrangler deploy                                     # Production — רק ב
 | `VAPID_*` | Supabase secrets + מפתח ציבורי ב-`site/src/admin/lib/config.ts` | החלפה מנתקת את כל המכשירים הרשומים — צריך להפעיל התראות מחדש |
 | `DIGEST_KEY` | Supabase secrets + Vault `digest_key` | ליצור ערך חדש ולעדכן בשניהם |
 | `IP_HASH_SALT` | Supabase secrets | לא חובה |
-| מפתח Supabase PAT (לסשנים של Claude) | הגדרות הסביבה ב-claude.ai (Network secrets) | למחוק בסיום העבודה |
+| מפתח Supabase PAT (לסשנים של Claude) | הגדרות הסביבה ב-claude.ai (Network secrets) | נדרש לסיכום השבועי של העוזרת; רוטציה: ליצור מפתח חדש ב-Supabase ולהחליף בהגדרות הסביבה |
 
 ## 5. גיבויים ושמירת מידע
 - בתוכנית החינמית אין PITR. גיבוי: קורל מייצאת CSV פעם בחודש (מסך פניות). לגיבוי מלא: Supabase Pro (~25$/חודש) — החלטה עסקית.
@@ -67,5 +67,5 @@ npx wrangler deploy                                     # Production — רק ב
 - [x] אחרי שקורל נכנסת: להחזיר תוקף קישורי מייל לשעה (`mailer_otp_exp = 3600`) — בוצע 25/11/2026.
 - [ ] **הרשאה זמנית (25/11/2026):** המנהל הטכני שודרג ל-`owner` לצורך הדגמה לקורל. להחזיר אחרי ההדגמה:
   `update public.profiles set role='tech_admin' where id='426b5629-9feb-4af5-838c-0d87f7716353';`
-- [ ] בסוף העבודה: למחוק את מפתח ה-Supabase מ-Network secrets של סביבת Default ב-claude.ai, ואת הכתובות הזמניות מרשימת ה-allowed hosts אם אין בהן צורך.
+- [ ] **לא למחוק** את מפתח ה-Supabase מ-Network secrets של הסביבה ב-claude.ai: הסיכום השבועי של העוזרת (משימה מתוזמנת, שישי 12:43) משתמש בו. אם מוחקים אותו, צריך גם לבטל את המשימה המתוזמנת.
 - [ ] אם יירכש דומיין: לעדכן `site` ב-`astro.config.mjs`, `robots.txt`, `ALLOWED_ORIGINS` ב-`submit-lead`, Turnstile domains, ו-Auth redirect URLs.

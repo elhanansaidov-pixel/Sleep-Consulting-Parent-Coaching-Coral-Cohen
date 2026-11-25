@@ -53,3 +53,4 @@ Signup disabled · TOTP MFA enabled · password ≥ 12 chars with lower/upper/di
 - `usage_log` — event kinds + short non-personal codes (screen ids, FAQ/tour ids, wording of unanswered help questions). Insert own rows only; select only `tech_admin`. Purged after 12 months (cron `purge-old-usage`, 03:25 UTC).
 - `assistant_profile` — one row per user (`profile`, `snapshots` jsonb), own rows only (tech_admin can read).
 - E2E: `tests/e2e/assistant.cjs` (synthetic owner + lead, deleted at the end).
+- Weekly summary (migration 0014): `private.assistant_weekly_report(days)` → jsonb with per-pilot-user counts (this week vs previous), fixes/questions by topic, repeat questions, unanswered questions (exact wording), tours, tips, current profile and last snapshot. `private.assistant_save_snapshot(user, jsonb)` appends a weekly snapshot (keeps 52). Both are callable only through the Management API (postgres); a scheduled Claude session runs them every Friday 12:43 Israel time.
