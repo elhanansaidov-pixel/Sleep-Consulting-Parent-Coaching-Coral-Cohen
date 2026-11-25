@@ -85,7 +85,7 @@ export function DeviceNotifications() {
   const { state, busy, msg, enable, disable } = usePush();
 
   return (
-    <section className="card" aria-labelledby="push-h">
+    <section className="card" aria-labelledby="push-h" data-help="settings-push">
       <h2 id="push-h" className="card__title">התראות במכשיר הזה</h2>
       <p className="muted">התראה קופצת על כל פנייה חדשה מהאתר, בנוסף למייל. ההתראה לא כוללת פרטים אישיים, רק קישור לפנייה.</p>
       {state === 'loading' && <p className="muted">בודקים…</p>}
@@ -161,7 +161,7 @@ export function AutomationsPanel({ role }: { role: Role }) {
   }
 
   return (
-    <section className="card" aria-labelledby="auto-h">
+    <section className="card" aria-labelledby="auto-h" data-help="settings-automations">
       <h2 id="auto-h" className="card__title">אוטומציות</h2>
       <ul className="autos">
         {autos.map((a) => (

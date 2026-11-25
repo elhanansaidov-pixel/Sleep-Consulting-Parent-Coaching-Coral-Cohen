@@ -37,7 +37,7 @@ export function ClientsScreen() {
             const active = c.programs?.some((p) => p.status === 'active');
             return (
               <li key={c.id}>
-                <a className="lcard" href={`#/clients/${c.id}`}>
+                <a className="lcard" data-help="client-row" href={`#/clients/${c.id}`}>
                   <span className="lcard__top"><b>{c.parent_names}</b>{active && <span className="chip chip--won">בתהליך פעיל</span>}</span>
                   <span className="muted">{c.tags?.length ? c.tags.join(' · ') + ' · ' : ''}מאז {fmtDate(c.created_at)}</span>
                 </a>
@@ -152,7 +152,7 @@ export function ClientDetailScreen({ id, role }: { id: string; role: Role }) {
       <PageHead title={c.parent_names} lead={`${c.tags?.length ? c.tags.join(' · ') + ' · ' : ''}מאז ${fmtDate(c.created_at)}`}>
         {c.phone_normalized && <a className="cbtn cbtn--primary" href={`https://wa.me/${c.phone_normalized}`} target="_blank" rel="noopener noreferrer">וואטסאפ</a>}
         {c.phone && <a className="cbtn" href={`tel:${c.phone}`}>חיוג</a>}
-        {owner && <button className="cbtn" onClick={() => setModal('edit')}>עריכה</button>}
+        {owner && <button className="cbtn" data-help="client-edit" onClick={() => setModal('edit')}>עריכה</button>}
       </PageHead>
       {node}
       {c.created_from_lead_id && <p className="muted">נוצרה מ<a href={`#/leads/${c.created_from_lead_id}`}>פנייה בשאלון</a>.</p>}
@@ -161,7 +161,7 @@ export function ClientDetailScreen({ id, role }: { id: string; role: Role }) {
         <div className="side-col">
           <section className="card" aria-labelledby="pr-h">
             <div className="card__row"><h2 id="pr-h" className="card__title">תהליכים</h2>
-              {owner && <span className="actions"><button className="cbtn cbtn--sm" onClick={() => startProgram('sleep')}>+ ייעוץ שינה</button><button className="cbtn cbtn--sm" onClick={() => startProgram('parenting')}>+ הדרכת הורים</button></span>}
+              {owner && <span className="actions"><button className="cbtn cbtn--sm" data-help="client-program-sleep" onClick={() => startProgram('sleep')}>+ ייעוץ שינה</button><button className="cbtn cbtn--sm" onClick={() => startProgram('parenting')}>+ הדרכת הורים</button></span>}
             </div>
             {programs.length === 0 ? <p className="muted">אין תהליכים.</p> : (
               <ul className="mini-list">{programs.map((p) => (
@@ -171,7 +171,7 @@ export function ClientDetailScreen({ id, role }: { id: string; role: Role }) {
             )}
           </section>
           <section className="card" aria-labelledby="dl-h">
-            <div className="card__row"><h2 id="dl-h" className="card__title">עסקאות</h2>{owner && <button className="cbtn cbtn--sm" onClick={() => setModal('deal')}>+ עסקה</button>}</div>
+            <div className="card__row"><h2 id="dl-h" className="card__title">עסקאות</h2>{owner && <button className="cbtn cbtn--sm" data-help="client-deal-add" onClick={() => setModal('deal')}>+ עסקה</button>}</div>
             {deals.length === 0 ? <p className="muted">אין עסקאות.</p> : (
               <ul className="mini-list">{deals.map((d) => (
                 <li key={d.id}><a href="#/deals"><b>{d.title ?? SERVICE[d.service]}</b></a>
@@ -184,7 +184,7 @@ export function ClientDetailScreen({ id, role }: { id: string; role: Role }) {
         <aside className="side-col">
           <TaskPanel scope={{ client_id: id }} role={role} />
           <Timeline entity="client" id={id} canWrite={owner} refreshKey={tl} />
-          {owner && <button className="cbtn cbtn--danger" onClick={remove}>מחיקת המשפחה</button>}
+          {owner && <button className="cbtn cbtn--danger" data-help="client-delete" onClick={remove}>מחיקת המשפחה</button>}
         </aside>
       </div>
 

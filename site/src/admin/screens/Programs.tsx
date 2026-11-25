@@ -39,7 +39,7 @@ export function ProgramsScreen() {
         <ul className="cards cards--always">
           {rows.map((p) => (
             <li key={p.id}>
-              <a className="lcard" href={`#/programs/${p.id}`}>
+              <a className="lcard" data-help="program-row" href={`#/programs/${p.id}`}>
                 <span className="lcard__top"><b>{p.clients?.parent_names}</b><span className="chip">{SERVICE[p.service]}</span></span>
                 <Progress p={p} />
                 <span className="muted">{PROGRAM_STATUS[p.status]}{p.next_session_at ? ` · שיחה הבאה: ${fmt(p.next_session_at)}` : ''}</span>
@@ -107,14 +107,14 @@ export function ProgramDetailScreen({ id, role }: { id: string; role: Role }) {
               {sleep && (
                 <div className="grid2">
                   <div className="field"><label htmlFor="pg-w">שבוע (1–8)</label>
-                    <select id="pg-w" className="input" value={p.current_week ?? 1} onChange={(e) => update({ current_week: Number(e.target.value) }, `עבר לשבוע ${e.target.value}`)}>{Array.from({ length: 8 }, (_, i) => <option key={i} value={i + 1}>שבוע {i + 1}</option>)}</select></div>
+                    <select id="pg-w" data-help="program-week" className="input" value={p.current_week ?? 1} onChange={(e) => update({ current_week: Number(e.target.value) }, `עבר לשבוע ${e.target.value}`)}>{Array.from({ length: 8 }, (_, i) => <option key={i} value={i + 1}>שבוע {i + 1}</option>)}</select></div>
                   <div className="field"><label htmlFor="pg-s">שלב בתוכנית (1–4)</label>
-                    <select id="pg-s" className="input" value={p.current_stage ?? 1} onChange={(e) => update({ current_stage: Number(e.target.value) }, `עבר לשלב ${e.target.value} בתוכנית`)}>{[1, 2, 3, 4].map((n) => <option key={n} value={n}>שלב {n}</option>)}</select></div>
+                    <select id="pg-s" data-help="program-stage" className="input" value={p.current_stage ?? 1} onChange={(e) => update({ current_stage: Number(e.target.value) }, `עבר לשלב ${e.target.value} בתוכנית`)}>{[1, 2, 3, 4].map((n) => <option key={n} value={n}>שלב {n}</option>)}</select></div>
                 </div>
               )}
               <div className="grid2">
                 <div className="field"><label htmlFor="pg-n">{sleep ? 'השיחה השבועית הבאה' : 'המפגש הבא'}</label>
-                  <input id="pg-n" className="input" type="datetime-local" value={toLocalInput(p.next_session_at)} onChange={(e) => update({ next_session_at: fromLocalInput(e.target.value) })} /></div>
+                  <input id="pg-n" data-help="program-next" className="input" type="datetime-local" value={toLocalInput(p.next_session_at)} onChange={(e) => update({ next_session_at: fromLocalInput(e.target.value) })} /></div>
                 <div className="field"><label htmlFor="pg-st">סטטוס</label>
                   <select id="pg-st" className="input" value={p.status} onChange={(e) => update({ status: e.target.value as Program['status'] }, `סטטוס התהליך: ${PROGRAM_STATUS[e.target.value as Program['status']]}`)}>{Object.entries(PROGRAM_STATUS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
               </div>
@@ -124,7 +124,7 @@ export function ProgramDetailScreen({ id, role }: { id: string; role: Role }) {
           <section className="card" aria-labelledby="ss-h">
             <h2 id="ss-h" className="card__title">{sleep ? 'שיחות ומפגשים' : 'מפגשי הדרכה'}</h2>
             {owner && (
-              <form className="session-form" onSubmit={addSession}>
+              <form className="session-form" data-help="program-session" onSubmit={addSession}>
                 <div className="grid2">
                   <div className="field"><label htmlFor="ss-d">מתי</label><input id="ss-d" className="input" type="datetime-local" value={form.held_at} onChange={(e) => setForm({ ...form, held_at: e.target.value })} /></div>
                   <div className="field"><label htmlFor="ss-k">סוג</label><select id="ss-k" className="input" value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value as Session['kind'] })}>{Object.entries(SESSION_KIND).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>

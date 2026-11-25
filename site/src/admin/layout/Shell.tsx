@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { supabase, ROLE_LABEL, type Role } from '../lib/supabase';
+import { Assistant } from '../assistant/Assistant';
 
 export type RouteId = 'dashboard' | 'leads' | 'clients' | 'deals' | 'programs' | 'tasks' | 'settings' | 'help';
 
@@ -22,7 +23,7 @@ function Icon({ d }: { d: string }) {
   );
 }
 
-export function Shell({ route, name, role, children }: { route: RouteId; name: string; role: Role; children: ReactNode }) {
+export function Shell({ route, name, role, assistant, children }: { route: RouteId; name: string; role: Role; assistant: boolean; children: ReactNode }) {
   const mobileNav = NAV.filter((n) => ['dashboard', 'leads', 'programs', 'tasks', 'settings'].includes(n.id));
   return (
     <div className="shell">
@@ -36,7 +37,7 @@ export function Shell({ route, name, role, children }: { route: RouteId; name: s
           <ul>
             {NAV.map((n) => (
               <li key={n.id}>
-                <a href={`#/${n.id}`} className="side__link" aria-current={route === n.id ? 'page' : undefined}>
+                <a href={`#/${n.id}`} data-help={`nav-${n.id}`} className="side__link" aria-current={route === n.id ? 'page' : undefined}>
                   <Icon d={n.icon} />
                   <span>{n.label}</span>
                 </a>
@@ -54,7 +55,7 @@ export function Shell({ route, name, role, children }: { route: RouteId; name: s
       <header className="topm">
         <span className="side__name">Coral Cohen</span>
         <span className="actions">
-          <a className="cbtn cbtn--ghost cbtn--sm" href="#/help">מדריך</a>
+          <a className="cbtn cbtn--ghost cbtn--sm" href="#/help" data-help="nav-help">מדריך</a>
           <button className="cbtn cbtn--ghost cbtn--sm" onClick={() => supabase.auth.signOut()}>יציאה</button>
         </span>
       </header>
@@ -63,12 +64,13 @@ export function Shell({ route, name, role, children }: { route: RouteId; name: s
 
       <nav className="bottom" aria-label="ניווט ראשי (נייד)">
         {mobileNav.map((n) => (
-          <a key={n.id} href={`#/${n.id}`} className="bottom__link" aria-current={route === n.id ? 'page' : undefined}>
+          <a key={n.id} href={`#/${n.id}`} data-help={`nav-${n.id}`} className="bottom__link" aria-current={route === n.id ? 'page' : undefined}>
             <Icon d={n.icon} />
             <span>{n.label}</span>
           </a>
         ))}
       </nav>
+      {assistant && <Assistant />}
     </div>
   );
 }

@@ -47,3 +47,9 @@ Signup disabled · TOTP MFA enabled · password ≥ 12 chars with lower/upper/di
 - `stale_lead_flag` — pg_cron `flag-stale-leads` hourly: leads still in the first stage after 48h → priority high + activity + notification (once).
 - `new_lead_push` — in `submit-lead`: web push to the owner's devices (VAPID secrets `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`/`VAPID_SUBJECT`), 2 attempts, dead subscriptions removed.
 - Tests: `tests/automations.sql` (rolled back). Push delivery to a real device must be verified on a phone/desktop browser (headless browsers cannot subscribe).
+
+## Assistant (pilot) — migration 0013
+- `profiles.assistant_enabled` — pilot flag; the in-app assistant renders only for profiles with it.
+- `usage_log` — event kinds + short non-personal codes (screen ids, FAQ/tour ids, wording of unanswered help questions). Insert own rows only; select only `tech_admin`. Purged after 12 months (cron `purge-old-usage`, 03:25 UTC).
+- `assistant_profile` — one row per user (`profile`, `snapshots` jsonb), own rows only (tech_admin can read).
+- E2E: `tests/e2e/assistant.cjs` (synthetic owner + lead, deleted at the end).

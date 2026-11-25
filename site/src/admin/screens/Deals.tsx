@@ -31,6 +31,7 @@ function Card({ d, canDrag, onOpen }: { d: Deal; canDrag: boolean; onOpen: () =>
       <div
         ref={setNodeRef}
         className={`kcard${isDragging ? ' kcard--drag' : ''}`}
+        data-help="deal-card"
         style={{ transform: CSS.Translate.toString(transform) }}
         {...attributes}
         {...listeners}
@@ -45,7 +46,7 @@ function Card({ d, canDrag, onOpen }: { d: Deal; canDrag: boolean; onOpen: () =>
         </span>
       </div>
       {!isDragging && (
-        <button type="button" className="kcard__open" onClick={onOpen} aria-label={`פרטי העסקה של ${d.clients?.parent_names ?? ''}`}>פרטים</button>
+        <button type="button" className="kcard__open" data-help="deal-open" onClick={onOpen} aria-label={`פרטי העסקה של ${d.clients?.parent_names ?? ''}`}>פרטים</button>
       )}
     </div>
   );
@@ -95,8 +96,8 @@ function EditDeal({ d, stages, canWrite, onSaved }: { d: Deal; stages: Stage[]; 
           <div className="field"><label htmlFor="ed-st">שלב</label><select id="ed-st" className="input" value={f.stage_id} onChange={(e) => setF({ ...f, stage_id: e.target.value })}>{stages.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
         </div>
         <div className="grid2">
-          <div className="field"><label htmlFor="ed-ps">סטטוס תשלום</label><select id="ed-ps" className="input" value={f.payment_status} onChange={(e) => setF({ ...f, payment_status: e.target.value as Deal['payment_status'] })}>{Object.entries(PAYMENT).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
-          <div className="field"><label htmlFor="ed-pa">שולם בפועל (₪)</label><input id="ed-pa" className="input" type="number" min="0" dir="ltr" value={f.paid_amount} onChange={(e) => setF({ ...f, paid_amount: e.target.value })} /></div>
+          <div className="field"><label htmlFor="ed-ps">סטטוס תשלום</label><select id="ed-ps" data-help="deal-payment" className="input" value={f.payment_status} onChange={(e) => setF({ ...f, payment_status: e.target.value as Deal['payment_status'] })}>{Object.entries(PAYMENT).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
+          <div className="field"><label htmlFor="ed-pa">שולם בפועל (₪)</label><input id="ed-pa" data-help="deal-paid" className="input" type="number" min="0" dir="ltr" value={f.paid_amount} onChange={(e) => setF({ ...f, paid_amount: e.target.value })} /></div>
         </div>
         <div className="field"><label htmlFor="ed-ec">תאריך סגירה צפוי</label><input id="ed-ec" className="input" type="date" value={f.expected_close} onChange={(e) => setF({ ...f, expected_close: e.target.value })} /></div>
         {lostStage && <div className="field"><label htmlFor="ed-lr">סיבה שהעסקה לא נסגרה</label><input id="ed-lr" className="input" maxLength={500} value={f.lost_reason} onChange={(e) => setF({ ...f, lost_reason: e.target.value })} /></div>}

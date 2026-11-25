@@ -10,7 +10,7 @@ export type AuthStage =
   | { kind: 'mfa-enroll' }            // signed in, no verified TOTP factor yet
   | { kind: 'mfa-challenge'; factorId: string }
   | { kind: 'no-access' }             // signed in + MFA, but no staff profile
-  | { kind: 'ready'; session: Session; role: Role; name: string };
+  | { kind: 'ready'; session: Session; role: Role; name: string; assistant: boolean };
 
 const NEEDS_PW = 'cc-needs-password';
 
@@ -69,11 +69,11 @@ export function useAuthState() {
     // RLS lets a user read their own profile.
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role, full_name')
+      .select('role, full_name, assistant_enabled')
       .eq('id', session.user.id)
       .maybeSingle();
     if (!profile) return setStage({ kind: 'no-access' });
-    setStage({ kind: 'ready', session, role: profile.role as Role, name: profile.full_name || session.user.email || '' });
+    setStage({ kind: 'ready', session, role: profile.role as Role, name: profile.full_name || session.user.email || '', assistant: !!profile.assistant_enabled });
   }, []);
 
   useEffect(() => {

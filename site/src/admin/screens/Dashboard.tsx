@@ -216,13 +216,13 @@ export function DashboardScreen() {
     <>
       <PageHead title="לוח בקרה" lead="כל המספרים מחושבים מהנתונים במערכת. ההשוואה היא לתקופה באורך זהה שלפניה." />
       <PushNudge />
-      <div className="segmented" role="group" aria-label="טווח תאריכים">
+      <div className="segmented" role="group" aria-label="טווח תאריכים" data-help="dash-range">
         {RANGES.map((r) => <button key={r.id} className="segmented__btn" aria-pressed={range === r.id} onClick={() => setRange(r.id)}>{r.label}</button>)}
       </div>
       {err && <p className="field__err" role="alert">לא הצלחנו לטעון נתונים.</p>}
       {!m ? <p className="muted">טוען…</p> : (
         <>
-          <div className="tiles tiles--kpi">
+          <div className="tiles tiles--kpi" data-help="dash-kpis">
             <Kpi label="פניות חדשות" value={String(m.leads)} delta={m.leadsDelta} />
             <Kpi label="שיעור המרה למשפחה" value={m.convRate == null ? '—' : `${m.convRate}%`} note={m.convDeltaPts == null ? undefined : `${m.convDeltaPts >= 0 ? '+' : ''}${m.convDeltaPts} נק׳ מהתקופה הקודמת`} />
             <Kpi label="זמן תגובה ממוצע" value={fmtHours(m.resp)} delta={m.resp != null && m.respPrev ? change(m.resp, m.respPrev) : null} deltaKind="down-good" note="מפנייה ועד יצירת קשר" />

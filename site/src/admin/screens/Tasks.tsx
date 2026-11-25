@@ -33,7 +33,7 @@ function AddTask({ scope, onAdded }: { scope: Scope; onAdded: () => void }) {
     if (!error) { setTitle(''); setDue(''); setPriority('normal'); onAdded(); }
   }
   return (
-    <form className="task-add" onSubmit={submit}>
+    <form className="task-add" data-help="task-new" onSubmit={submit}>
       <label className="sr-only" htmlFor="t-title">משימה חדשה</label>
       <input id="t-title" className="input" placeholder="משימה חדשה…" maxLength={300} value={title} onChange={(e) => setTitle(e.target.value)} />
       <label className="sr-only" htmlFor="t-due">מועד</label>
@@ -61,7 +61,7 @@ function TaskRow({ t, canWrite, onChange, showLink }: { t: Task; canWrite: boole
   const link = t.client_id ? { href: `#/clients/${t.client_id}`, label: t.clients?.parent_names } : t.lead_id ? { href: `#/leads/${t.lead_id}`, label: t.leads?.parent_name } : null;
   return (
     <li className={`task task--${t.status} task--${b}`}>
-      <input type="checkbox" className="task__check" checked={t.status === 'done'} disabled={!canWrite} onChange={toggle} aria-label={`סימון "${t.title}" כבוצעה`} />
+      <input type="checkbox" data-help="task-check" className="task__check" checked={t.status === 'done'} disabled={!canWrite} onChange={toggle} aria-label={`סימון "${t.title}" כבוצעה`} />
       <div className="task__body">
         <span className="task__title">{t.title}</span>
         <span className="task__meta">

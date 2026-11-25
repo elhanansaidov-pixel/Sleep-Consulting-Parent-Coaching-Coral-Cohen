@@ -80,7 +80,7 @@ export function SettingsScreen({ role }: { role: Role }) {
     <>
       <PageHead title="הגדרות" lead="שלבי לוח המכירות משותפים לפניות ולעסקאות." />
       <p className="toast" role="status" aria-live="polite">{msg}</p>
-      <section className="card" aria-labelledby="stages-h">
+      <section className="card" aria-labelledby="stages-h" data-help="settings-stages">
         <h2 id="stages-h" className="card__title">שלבי לוח המכירות</h2>
         {!stages ? <p className="muted">טוען…</p> : (
           <ol className="stages">

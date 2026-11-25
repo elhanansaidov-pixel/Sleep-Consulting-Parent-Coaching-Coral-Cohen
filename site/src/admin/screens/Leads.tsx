@@ -92,14 +92,14 @@ export function LeadsScreen({ role }: { role: Role }) {
           <h1>פניות</h1>
           <p>{total} פניות מהשאלון באתר</p>
         </div>
-        {role === 'owner' && <button className="cbtn" onClick={exportCsv}>ייצוא ל-CSV</button>}
+        {role === 'owner' && <button className="cbtn" data-help="leads-export" onClick={exportCsv}>ייצוא ל-CSV</button>}
       </header>
 
       <div className="toolbar">
         <label className="sr-only" htmlFor="lead-q">חיפוש</label>
-        <input id="lead-q" className="input" type="search" placeholder="חיפוש לפי שם או טלפון" value={q} onChange={(e) => { setPage(0); setQ(e.target.value); }} />
+        <input id="lead-q" data-help="leads-search" className="input" type="search" placeholder="חיפוש לפי שם או טלפון" value={q} onChange={(e) => { setPage(0); setQ(e.target.value); }} />
         <label className="sr-only" htmlFor="lead-stage">סינון לפי שלב</label>
-        <select id="lead-stage" className="input" value={stageFilter} onChange={(e) => { setPage(0); setStageFilter(e.target.value); }}>
+        <select id="lead-stage" data-help="leads-filter" className="input" value={stageFilter} onChange={(e) => { setPage(0); setStageFilter(e.target.value); }}>
           <option value="">כל השלבים</option>
           {stages.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
@@ -115,7 +115,7 @@ export function LeadsScreen({ role }: { role: Role }) {
             <tbody>
               {rows.map((l) => (
                 <tr key={l.id}>
-                  <td><a className="rowlink" href={`#/leads/${l.id}`}>{l.parent_name}</a>{l.duplicate_of && <span className="chip chip--warn">חוזרת</span>}{l.priority === 'high' && <span className="chip chip--lost">עדיפות גבוהה</span>}</td>
+                  <td><a className="rowlink" data-help="lead-row" href={`#/leads/${l.id}`}>{l.parent_name}</a>{l.duplicate_of && <span className="chip chip--warn">חוזרת</span>}{l.priority === 'high' && <span className="chip chip--lost">עדיפות גבוהה</span>}</td>
                   <td dir="ltr" className="ltr-cell">{l.phone}</td>
                   <td>{l.child_age}</td>
                   <td><StageChip stage={stageById[l.stage_id ?? '']} /></td>
@@ -128,7 +128,7 @@ export function LeadsScreen({ role }: { role: Role }) {
           <ul className="cards">
             {rows.map((l) => (
               <li key={l.id}>
-                <a className="lcard" href={`#/leads/${l.id}`}>
+                <a className="lcard" data-help="lead-row" href={`#/leads/${l.id}`}>
                   <span className="lcard__top"><b>{l.parent_name}</b><StageChip stage={stageById[l.stage_id ?? '']} /></span>
                   <span className="muted">גיל: {l.child_age} · {fmt(l.created_at)}</span>
                 </a>
@@ -233,7 +233,7 @@ export function LeadDetailScreen({ id, role }: { id: string; role: Role }) {
           <p>התקבלה {fmt(lead.created_at)} · גיל הילד/ה: {lead.child_age}</p>
         </div>
         <div className="actions">
-          <a className="cbtn cbtn--primary" href={waLink(lead.phone_normalized)} target="_blank" rel="noopener noreferrer">וואטסאפ</a>
+          <a className="cbtn cbtn--primary" data-help="lead-whatsapp" href={waLink(lead.phone_normalized)} target="_blank" rel="noopener noreferrer">וואטסאפ</a>
           <a className="cbtn" href={`tel:${lead.phone}`}>חיוג</a>
           {lead.email && <a className="cbtn" href={`mailto:${lead.email}`}>מייל</a>}
         </div>
@@ -241,7 +241,7 @@ export function LeadDetailScreen({ id, role }: { id: string; role: Role }) {
       {lead.client_id ? (
         <p className="notice">הפנייה הפכה למשפחה. <a href={`#/clients/${lead.client_id}`}>לכרטיס המשפחה</a></p>
       ) : owner && (
-        <p className="notice notice--action"><span>מתאים? אפשר להפוך את הפנייה למשפחה ולפתוח עסקה.</span><button className="cbtn cbtn--primary cbtn--sm" onClick={convert}>הפיכה למשפחה</button></p>
+        <p className="notice notice--action"><span>מתאים? אפשר להפוך את הפנייה למשפחה ולפתוח עסקה.</span><button data-help="lead-convert" className="cbtn cbtn--primary cbtn--sm" onClick={convert}>הפיכה למשפחה</button></p>
       )}
       {lead.duplicate_of && <p className="notice">הורה זה כבר מילא שאלון בעבר. <a href={`#/leads/${lead.duplicate_of}`}>לפנייה הקודמת</a></p>}
       <p className="toast" role="status" aria-live="polite">{msg}</p>
@@ -264,19 +264,19 @@ export function LeadDetailScreen({ id, role }: { id: string; role: Role }) {
             <h2 id="mgmt-h" className="card__title">ניהול</h2>
             <div className="field">
               <label htmlFor="ld-stage">שלב</label>
-              <select id="ld-stage" className="input" disabled={!owner} value={lead.stage_id ?? ''} onChange={(e) => changeStage(e.target.value)}>
+              <select id="ld-stage" data-help="lead-stage" className="input" disabled={!owner} value={lead.stage_id ?? ''} onChange={(e) => changeStage(e.target.value)}>
                 {stages.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
             </div>
             <div className="field">
               <label htmlFor="ld-pri">עדיפות</label>
-              <select id="ld-pri" className="input" disabled={!owner} value={lead.priority} onChange={(e) => update({ priority: e.target.value as Lead['priority'] })}>
+              <select id="ld-pri" data-help="lead-priority" className="input" disabled={!owner} value={lead.priority} onChange={(e) => update({ priority: e.target.value as Lead['priority'] })}>
                 {Object.entries(PRIORITY).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </div>
             <div className="field">
               <label htmlFor="ld-fu">מעקב הבא</label>
-              <input id="ld-fu" className="input" type="date" disabled={!owner} value={lead.next_follow_up_at?.slice(0, 10) ?? ''} onChange={(e) => update({ next_follow_up_at: e.target.value ? new Date(e.target.value + 'T09:00:00').toISOString() : null })} />
+              <input id="ld-fu" data-help="lead-followup" className="input" type="date" disabled={!owner} value={lead.next_follow_up_at?.slice(0, 10) ?? ''} onChange={(e) => update({ next_follow_up_at: e.target.value ? new Date(e.target.value + 'T09:00:00').toISOString() : null })} />
             </div>
             {!owner && <p className="muted">מצב צפייה בלבד (מנהל טכני).</p>}
           </section>
@@ -284,7 +284,7 @@ export function LeadDetailScreen({ id, role }: { id: string; role: Role }) {
           <section className="card" aria-labelledby="tl-h">
             <h2 id="tl-h" className="card__title">הערות ופעילות</h2>
             {owner && (
-              <form onSubmit={addNote} className="note-form">
+              <form onSubmit={addNote} className="note-form" data-help="lead-note">
                 <label className="sr-only" htmlFor="ld-note">הערה חדשה</label>
                 <textarea id="ld-note" className="input" rows={3} maxLength={10000} placeholder="הערה פנימית…" value={note} onChange={(e) => setNote(e.target.value)} />
                 <button className="cbtn cbtn--sm" disabled={!note.trim()}>הוספה</button>
@@ -301,7 +301,7 @@ export function LeadDetailScreen({ id, role }: { id: string; role: Role }) {
           </section>
 
           <TaskPanel scope={{ lead_id: lead.id }} role={role} />
-          {owner && <button className="cbtn cbtn--danger" onClick={remove}>מחיקת הפנייה</button>}
+          {owner && <button className="cbtn cbtn--danger" data-help="lead-delete" onClick={remove}>מחיקת הפנייה</button>}
         </aside>
       </div>
     </>

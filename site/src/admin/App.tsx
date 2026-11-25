@@ -55,7 +55,7 @@ export default function App() {
   };
 
   return (
-    <Shell route={route} name={stage.name} role={stage.role}>
+    <Shell route={route} name={stage.name} role={stage.role} assistant={stage.assistant}>
       {screens[route]}
     </Shell>
   );
