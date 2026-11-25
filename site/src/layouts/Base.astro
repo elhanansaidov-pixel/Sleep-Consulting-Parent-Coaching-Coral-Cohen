@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import A11yMenu from '../components/A11yMenu.astro';
 
 interface Props {
   title: string;
@@ -35,6 +36,14 @@ const jsonLd = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline>
+      // Apply saved accessibility-menu preferences before first paint.
+      try {
+        var a = JSON.parse(localStorage.getItem('a11y-prefs') || '{}'), r = document.documentElement;
+        var f = [1, 1.125, 1.25, 1.4][a.size || 0]; if (f && f !== 1) r.style.setProperty('--a11y-fs', String(f));
+        ['contrast', 'gray', 'links', 'spacing', 'still', 'cursor'].forEach(function (k) { if (a[k]) r.classList.add('a11y-' + k); });
+      } catch (e) {}
+    </script>
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -55,5 +64,6 @@ const jsonLd = {
   <body>
     <a class="skip-link" href="#main">דילוג לתוכן</a>
     <slot />
+    <A11yMenu />
   </body>
 </html>
