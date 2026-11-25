@@ -64,7 +64,7 @@ npx wrangler deploy                                     # Production — רק ב
 | ביצועים/SEO | Lighthouse על הכתובת הראשית |
 
 ## 8. ניקוי פתוח (לבצע ידנית)
-- [ ] אחרי שקורל נכנסת: להחזיר תוקף קישורי מייל לשעה (`mailer_otp_exp = 3600`).
+- [x] אחרי שקורל נכנסת: להחזיר תוקף קישורי מייל לשעה (`mailer_otp_exp = 3600`) — בוצע 25/11/2026.
 - [ ] **הרשאה זמנית (25/11/2026):** המנהל הטכני שודרג ל-`owner` לצורך הדגמה לקורל. להחזיר אחרי ההדגמה:
   `update public.profiles set role='tech_admin' where id='426b5629-9feb-4af5-838c-0d87f7716353';`
 - [ ] בסוף העבודה: למחוק את מפתח ה-Supabase מ-Network secrets של סביבת Default ב-claude.ai, ואת הכתובות הזמניות מרשימת ה-allowed hosts אם אין בהן צורך.

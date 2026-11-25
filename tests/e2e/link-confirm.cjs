@@ -36,7 +36,7 @@ const check = (ok, msg) => { console.log(`${ok ? 'PASS' : 'FAIL'} ${msg}`); if (
     await p.getByLabel('סיסמה חדשה').first().waitFor({ timeout: 15000 });
     check(true, 'token still valid after preview → set-password screen');
     check(!(await p.evaluate(() => location.search)), 'token removed from the address bar');
-    await p.screenshot({ path: process.env.OUT ? `${process.env.OUT}/link-confirm-setpw.png` : '/dev/null' });
+    if (process.env.OUT) await p.screenshot({ path: `${process.env.OUT}/link-confirm-setpw.png` });
 
     // 3) reusing the link fails gracefully
     const p2 = await (await b.newContext()).newPage();
