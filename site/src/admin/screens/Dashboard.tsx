@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { PageHead, money } from '../lib/ui';
+import { PushNudge } from './Automations';
 
 /* ── period handling ───────────────────────────────────────── */
 type RangeId = '30d' | '90d' | '12m' | 'ytd';
@@ -214,6 +215,7 @@ export function DashboardScreen() {
   return (
     <>
       <PageHead title="לוח בקרה" lead="כל המספרים מחושבים מהנתונים במערכת. ההשוואה היא לתקופה באורך זהה שלפניה." />
+      <PushNudge />
       <div className="segmented" role="group" aria-label="טווח תאריכים">
         {RANGES.map((r) => <button key={r.id} className="segmented__btn" aria-pressed={range === r.id} onClick={() => setRange(r.id)}>{r.label}</button>)}
       </div>

@@ -14,7 +14,8 @@ const isStandalone = () => window.matchMedia('(display-mode: standalone)').match
 
 type PushState = 'loading' | 'unsupported' | 'ios-install' | 'denied' | 'off' | 'on';
 
-export function DeviceNotifications() {
+/** Shared push-subscription state for the settings card and the dashboard nudge. */
+function usePush() {
   const [state, setState] = useState<PushState>('loading');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
@@ -65,6 +66,12 @@ export function DeviceNotifications() {
     detect();
   }
 
+  return { state, busy, msg, enable, disable };
+}
+
+export function DeviceNotifications() {
+  const { state, busy, msg, enable, disable } = usePush();
+
   return (
     <section className="card" aria-labelledby="push-h">
       <h2 id="push-h" className="card__title">התראות במכשיר הזה</h2>
@@ -93,6 +100,33 @@ export function DeviceNotifications() {
 /* ── automations: switches + run log ──────────────────────── */
 type Auto = { key: string; label: string; enabled: boolean };
 type Run = { id: number; automation: string; status: 'ok' | 'error' | 'skipped'; attempts: number; detail: string | null; ran_at: string };
+const NUDGE_KEY = 'cc-push-nudge-dismissed';
+/** Gentle banner on the dashboard until this device has notifications on (or the user dismisses it). */
+export function PushNudge() {
+  const { state, busy, enable } = usePush();
+  const [hidden, setHidden] = useState(() => { try { return localStorage.getItem(NUDGE_KEY) === '1'; } catch { return false; } });
+  if (hidden || !['off', 'ios-install'].includes(state)) return null;
+  const dismiss = () => { try { localStorage.setItem(NUDGE_KEY, '1'); } catch { /* ignore */ } setHidden(true); };
+  return (
+    <div className="nudge" role="region" aria-label="הפעלת התראות">
+      {state === 'off' ? (
+        <>
+          <p><b>רוצה לקבל התראה בטלפון על כל פנייה חדשה?</b> לחיצה על הכפתור תקפיץ בקשת הרשאה מהדפדפן.</p>
+          <span className="actions">
+            <button className="cbtn cbtn--primary cbtn--sm" onClick={enable} disabled={busy}>{busy ? 'מפעילים…' : 'הפעלת התראות'}</button>
+            <button className="cbtn cbtn--ghost cbtn--sm" onClick={dismiss}>לא עכשיו</button>
+          </span>
+        </>
+      ) : (
+        <>
+          <p><b>באייפון אפשר לקבל התראות על פניות חדשות.</b> ב-Safari: כפתור השיתוף ← "הוספה למסך הבית", ואז פותחים את המערכת מהאייקון ומפעילים בהגדרות.</p>
+          <span className="actions"><button className="cbtn cbtn--ghost cbtn--sm" onClick={dismiss}>הבנתי</button></span>
+        </>
+      )}
+    </div>
+  );
+}
+
 const STATUS = { ok: 'בוצע', error: 'שגיאה', skipped: 'דולג' } as const;
 
 export function AutomationsPanel({ role }: { role: Role }) {
