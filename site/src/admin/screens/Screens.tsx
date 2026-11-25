@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase, type Role } from '../lib/supabase';
+import { AutomationsPanel, DeviceNotifications } from './Automations';
 
 function PageHead({ title, lead }: { title: string; lead?: string }) {
   return (
@@ -104,6 +105,10 @@ export function SettingsScreen({ role }: { role: Role }) {
           <button className="cbtn" disabled={!newName.trim()}>הוספת שלב</button>
         </form>
       </section>
+      <div className="settings-grid">
+        <DeviceNotifications />
+        <AutomationsPanel role={role} />
+      </div>
     </>
   );
 }

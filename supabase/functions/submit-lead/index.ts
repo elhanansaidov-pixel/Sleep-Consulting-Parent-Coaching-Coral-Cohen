@@ -1,9 +1,10 @@
 // submit-lead — public endpoint for the website questionnaire.
 // Validates input, blocks spam (honeypot + Turnstile + per-IP rate limit), flags duplicates,
-// stores the lead with the service role, and emails Coral a minimal notification.
+// stores the lead with the service role, emails Coral a minimal notification, and sends a web push.
 // Never logs personal data.
 import { createClient } from 'npm:@supabase/supabase-js@2.119.2';
 import nodemailer from 'npm:nodemailer@6.9.16';
+import webpush from 'npm:web-push@3.6.7';
 
 const ALLOWED_ORIGINS = new Set([
   'https://coral-cohen-sleep.coral-cohen-site.workers.dev',
@@ -107,6 +108,44 @@ async function notify(lead: { id: string; parent_name: string; phone: string; ch
   });
 }
 
+type Db = ReturnType<typeof createClient>;
+
+/** Web push to the owner's devices. Up to 2 attempts per device; dead subscriptions are removed.
+ *  The payload carries no personal data — only a generic title and the lead id for the link. */
+async function pushNewLead(db: Db, leadId: string) {
+  const { data: on } = await db.from('automations').select('enabled').eq('key', 'new_lead_push').maybeSingle();
+  if (!on?.enabled) return;
+  const { data: owners } = await db.from('profiles').select('id').eq('role', 'owner');
+  const ids = (owners ?? []).map((o) => o.id);
+  if (!ids.length) return;
+  const { data: subs } = await db.from('push_subscriptions').select('id,endpoint,p256dh,auth').in('user_id', ids);
+  if (!subs?.length) {
+    await db.from('automation_runs').upsert({ automation: 'new_lead_push', entity_id: leadId, status: 'skipped', detail: 'no subscribed devices' }, { onConflict: 'automation,entity_id' });
+    return;
+  }
+  webpush.setVapidDetails(env('VAPID_SUBJECT'), env('VAPID_PUBLIC_KEY'), env('VAPID_PRIVATE_KEY'));
+  const payload = JSON.stringify({ title: 'פנייה חדשה מהאתר', body: 'פנייה חדשה ממתינה במערכת', url: `/admin#/leads/${leadId}` });
+  let ok = 0, failed = 0, attempts = 0;
+  for (const s of subs) {
+    for (let i = 0; i < 2; i++) {
+      attempts++;
+      try {
+        await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload, { TTL: 86400, urgency: 'high' });
+        ok++;
+        break;
+      } catch (e) {
+        const code = (e as { statusCode?: number }).statusCode ?? 0;
+        if (code === 404 || code === 410) { await db.from('push_subscriptions').delete().eq('id', s.id); failed++; break; }
+        if (i === 1) failed++;
+      }
+    }
+  }
+  await db.from('automation_runs').upsert({
+    automation: 'new_lead_push', entity_id: leadId, status: ok ? 'ok' : 'error', attempts: Math.min(attempts, 32000),
+    detail: `${ok} sent, ${failed} failed`,
+  }, { onConflict: 'automation,entity_id' });
+}
+
 Deno.serve(async (req) => {
   const origin = req.headers.get('origin');
   const h = cors(origin);
@@ -174,6 +213,8 @@ Deno.serve(async (req) => {
   } catch (e) {
     console.error('notify_failed', (e as Error)?.name ?? 'error'); // lead is saved; email can be retried
   }
+
+  try { await pushNewLead(db, lead.id); } catch { console.error('push_failed'); }
 
   return json(200, { ok: true }, h);
 });

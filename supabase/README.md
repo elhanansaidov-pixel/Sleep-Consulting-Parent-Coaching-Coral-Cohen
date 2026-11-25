@@ -40,3 +40,10 @@ Signup disabled · TOTP MFA enabled · password ≥ 12 chars with lower/upper/di
 
 ## Testing note (stage D)
 `tests/e2e/crm-flow.cjs` covers lead → family → deal → program → session → task → kanban (keyboard) → payment → settings, with a synthetic owner and lead that are deleted afterwards. Digest emails in tests go to the technical admin (NOTIFY_TO is switched temporarily and restored).
+
+## Automations (stage F)
+- `automations` (switches, owner can pause) + `automation_runs` (unique per automation+entity → idempotent; status ok/error/skipped).
+- `new_lead_task` — trigger on lead insert (non-duplicates): task "ליצור קשר עם …" due tomorrow 10:00 Israel.
+- `stale_lead_flag` — pg_cron `flag-stale-leads` hourly: leads still in the first stage after 48h → priority high + activity + notification (once).
+- `new_lead_push` — in `submit-lead`: web push to the owner's devices (VAPID secrets `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`/`VAPID_SUBJECT`), 2 attempts, dead subscriptions removed.
+- Tests: `tests/automations.sql` (rolled back). Push delivery to a real device must be verified on a phone/desktop browser (headless browsers cannot subscribe).

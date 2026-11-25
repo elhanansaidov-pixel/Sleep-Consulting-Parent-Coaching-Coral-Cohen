@@ -289,3 +289,17 @@ textarea.input { padding: 0.6rem 0.75rem; width: 100%; resize: vertical; line-he
 [dir='rtl'] .funnel__bar { border-radius: 4px 0 0 4px; margin-inline-start: 0; }
 .funnel__val { font-variant-numeric: tabular-nums; }
 @media (max-width: 600px) { .funnel li { grid-template-columns: 1fr auto; } .funnel__track { grid-column: 1 / -1; grid-row: 2; } }
+
+/* ── stage F ──────────────────────────────────────────────── */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+@media (max-width: 1000px) { .settings-grid { grid-template-columns: 1fr; } }
+.autos { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: 0.6rem; }
+.switch { display: flex; gap: 0.6rem; align-items: center; cursor: pointer; }
+.switch input { width: 2.4rem; height: 1.35rem; appearance: none; background: var(--line-strong); border-radius: 999px; position: relative; cursor: pointer; flex: none; transition: background 0.15s; }
+.switch input::after { content: ''; position: absolute; top: 2px; inset-inline-start: 2px; width: calc(1.35rem - 4px); height: calc(1.35rem - 4px); border-radius: 50%; background: #fff; transition: inset-inline-start 0.15s; }
+.switch input:checked { background: var(--ok); }
+.switch input:checked::after { inset-inline-start: calc(100% - 1.35rem + 2px); }
+.switch input:disabled { opacity: 0.6; cursor: not-allowed; }
+.autos__sub { font-size: 0.95rem; font-weight: 500; margin: 0.5rem 0; }
+.howto ol { padding-inline-start: 1.2rem; margin: 0.4rem 0 0; }
+.howto li { margin-bottom: 0.25rem; }
