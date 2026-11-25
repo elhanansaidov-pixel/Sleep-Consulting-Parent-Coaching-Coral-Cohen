@@ -5,6 +5,7 @@
 @import '@fontsource/ibm-plex-sans-hebrew/latin-300.css';
 @import '@fontsource/ibm-plex-sans-hebrew/latin-400.css';
 @import '@fontsource/ibm-plex-sans-hebrew/latin-500.css';
+@import '@fontsource/playfair-display/latin-400.css';
 
 :root {
   /* brand — sampled from logo */
@@ -25,6 +26,7 @@
   --line: var(--stone);
 
   --font-display: 'IBM Plex Sans Hebrew', 'Segoe UI', system-ui, sans-serif;
+  --font-brand: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-body: 'IBM Plex Sans Hebrew', 'Segoe UI', system-ui, sans-serif;
 
   --step--1: clamp(0.92rem, 0.9rem + 0.1vw, 1rem);

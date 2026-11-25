@@ -5,7 +5,7 @@ function AuthCard({ title, lead, children }: { title: string; lead?: string; chi
   return (
     <main className="auth" id="main">
       <div className="auth__card">
-        <p className="auth__brand">coral cohen</p>
+        <p className="auth__brand">Coral Cohen</p>
         <h1 className="auth__title">{title}</h1>
         {lead && <p className="auth__lead">{lead}</p>}
         {children}

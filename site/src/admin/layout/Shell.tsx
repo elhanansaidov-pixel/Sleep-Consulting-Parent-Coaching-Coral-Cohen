@@ -29,7 +29,7 @@ export function Shell({ route, name, role, children }: { route: RouteId; name: s
       <a className="skip" href="#main">דילוג לתוכן</a>
       <aside className="side" aria-label="ניווט ראשי">
         <div className="side__brand">
-          <span className="side__name">coral cohen</span>
+          <span className="side__name">Coral Cohen</span>
           <span className="side__sub">CRM</span>
         </div>
         <nav>
@@ -52,7 +52,7 @@ export function Shell({ route, name, role, children }: { route: RouteId; name: s
       </aside>
 
       <header className="topm">
-        <span className="side__name">coral cohen</span>
+        <span className="side__name">Coral Cohen</span>
         <span className="actions">
           <a className="cbtn cbtn--ghost cbtn--sm" href="#/help">מדריך</a>
           <button className="cbtn cbtn--ghost cbtn--sm" onClick={() => supabase.auth.signOut()}>יציאה</button>
