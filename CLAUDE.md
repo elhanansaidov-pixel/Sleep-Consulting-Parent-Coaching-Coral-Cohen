@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+## שפה — כלל מחייב
+**מדברים עם בעל הפרויקט בעברית בלבד.** כל הודעה, סיכום, שאלה, הסבר ודיווח — בעברית, ללא יוצא מן הכלל.
+אנגלית מותרת רק בתוך קוד, פקודות, שמות קבצים, הודעות commit, ותיאורי Pull Request.
+
 Read `AGENTS.md` first — the same rules apply to Claude Code.
 
 Workflow:
