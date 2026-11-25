@@ -9,6 +9,7 @@ export type UsageKind = 'screen' | 'action' | 'undo' | 'help_q' | 'help_miss' | 
 export type UsageRow = { kind: UsageKind; detail: string; at: string };
 
 const LOCAL_KEY = 'cc-usage';
+export const USAGE_EVENT = 'cc-usage';
 const LOCAL_MAX = 1500;
 let enabled = false;
 let queue: UsageRow[] = [];
@@ -35,6 +36,7 @@ export function track(kind: UsageKind, detail = '') {
     localStorage.setItem(LOCAL_KEY, JSON.stringify(all.slice(-LOCAL_MAX)));
   } catch { /* storage full/blocked: server copy still goes out */ }
   queue.push(row);
+  window.dispatchEvent(new CustomEvent(USAGE_EVENT, { detail: row }));
   window.clearTimeout(timer);
   timer = window.setTimeout(flush, 5000);
 }

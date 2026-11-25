@@ -1,3 +1,4 @@
+import { track } from '../assistant/usage';
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { supabase, type Role } from '../lib/supabase';
 import { steps as qSteps } from '../../data/questionnaire';
@@ -66,6 +67,7 @@ export function LeadsScreen({ role }: { role: Role }) {
   useEffect(() => { const t = setTimeout(load, 250); return () => clearTimeout(t); }, [load]);
 
   async function exportCsv() {
+    track('action', 'export:leads');
     const { data, error } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
     if (error || !data) return alert('הייצוא נכשל.');
     const qs = qSteps.flatMap((s) => s.fields).filter((f) => !['parent_name', 'phone', 'email', 'child_age'].includes(f.id));

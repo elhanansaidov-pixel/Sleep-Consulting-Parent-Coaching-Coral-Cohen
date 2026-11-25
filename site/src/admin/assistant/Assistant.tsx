@@ -4,7 +4,10 @@ import { FAQ, type Faq } from './faq';
 import { search } from './search';
 import { TOURS } from './tours';
 import { TourHost, startTour } from './Tour';
-import { localUsage, setUsageEnabled, track } from './usage';
+import { setUsageEnabled, track, USAGE_EVENT, type UsageRow } from './usage';
+import { installInstrumentation } from './instrument';
+import { computeProfile, syncProfile, type Profile } from './profile';
+import { dismiss, loadSnapshot, pickTip, TOPIC_LABEL, type DataSnapshot, type Tip } from './tips';
 
 const WELCOMED = 'cc-assistant-welcomed';
 const SCREEN_LABEL: Record<string, string> = {
@@ -20,14 +23,18 @@ const DAILY: { text: string; tour?: string }[] = [
   { text: 'בלוח הבקרה, "הכנסות בפועל" כולל רק כסף ששולם. "תחזית" היא עסקאות פתוחות.', tour: 'dashboard' },
   { text: 'המערכת יכולה להיפתח כמו אפליקציה: "הוספה למסך הבית" בדפדפן.' },
 ];
-const dayTip = () => DAILY[Math.floor(Date.now() / 86_400_000) % DAILY.length];
-
-function topScreens(): string[] {
-  const counts: Record<string, number> = {};
-  for (const r of localUsage()) if (r.kind === 'screen' && SCREEN_LABEL[r.detail]) counts[r.detail] = (counts[r.detail] ?? 0) + 1;
-  const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([k]) => k).filter((k) => k !== 'help');
-  return (top.length >= 3 ? top : [...top, 'leads', 'tasks', 'programs'].filter((k, i, a) => a.indexOf(k) === i)).slice(0, 3);
+const TIP_AFTER_ACTIONS = 5;
+/** Daily tip, skipping topics already learned. */
+function dayTip(learned: string[]) {
+  const pool = DAILY.filter((t) => !t.tour || !learned.includes(t.tour));
+  const list = pool.length ? pool : DAILY;
+  return list[Math.floor(Date.now() / 86_400_000) % list.length];
 }
+function topScreens(p: Profile): string[] {
+  const top = p.shortcuts.filter((k) => SCREEN_LABEL[k]);
+  return [...top, 'leads', 'tasks', 'programs'].filter((k, i, a) => a.indexOf(k) === i).slice(0, 3);
+}
+const hourText = (h: number) => `${String(h).padStart(2, '0')}:00`;
 
 function Answer({ f, onTour }: { f: Faq; onTour: (id: string) => void }) {
   return (
@@ -46,13 +53,51 @@ export function Assistant() {
   const [q, setQ] = useState('');
   const [asked, setAsked] = useState('');
   const [results, setResults] = useState<Faq[]>([]);
+  const [profile, setProfile] = useState<Profile>(() => computeProfile());
+  const [tip, setTip] = useState<Tip | null>(null);
   const fab = useRef<HTMLButtonElement>(null);
   const input = useRef<HTMLInputElement>(null);
+  const sessionActions = useRef(0);
+  const snapshot = useRef<{ at: number; data: DataSnapshot | null }>({ at: 0, data: null });
+  const shownTips = useRef(new Set<string>());
 
   useEffect(() => {
     setUsageEnabled(true);
+    installInstrumentation();
+    syncProfile(true).catch(() => {});
     try { if (!localStorage.getItem(WELCOMED)) setWelcome(true); } catch { /* ignore */ }
   }, []);
+
+  // Learn on every event; after a few actions in this visit, consider one proactive tip.
+  useEffect(() => {
+    const on = async (e: Event) => {
+      const row = (e as CustomEvent<UsageRow>).detail;
+      const p = computeProfile();
+      setProfile(p);
+      syncProfile().catch(() => {});
+      if (row.kind !== 'action') return;
+      sessionActions.current++;
+      if (sessionActions.current < TIP_AFTER_ACTIONS) return;
+      if (Date.now() - snapshot.current.at > 60_000) {
+        snapshot.current = { at: Date.now(), data: await loadSnapshot().catch(() => null) };
+      }
+      const t = pickTip(snapshot.current.data, p);
+      if (t && !document.body.hasAttribute('data-tour-active')) {
+        setTip(t);
+        if (!shownTips.current.has(t.key)) { shownTips.current.add(t.key); track('tip', `${t.key}:shown`); }
+      }
+    };
+    window.addEventListener(USAGE_EVENT, on);
+    return () => window.removeEventListener(USAGE_EVENT, on);
+  }, []);
+
+  function tipOk() { if (!tip) return; dismiss(tip.key); track('tip', `${tip.key}:ok`); setTip(null); }
+  function tipGo() {
+    if (!tip) return;
+    dismiss(tip.key); track('tip', `${tip.key}:go`);
+    const t = tip; setTip(null);
+    if (t.tour) startTour(t.tour); else if (t.href) window.location.hash = t.href;
+  }
   // Screen visits (the "shortcuts" are the most-opened screens).
   useEffect(() => {
     const log = () => track('screen', window.location.hash.replace(/^#\/?/, '').split('/')[0] || 'dashboard');
@@ -86,12 +131,20 @@ export function Assistant() {
     else track('help_miss', text);
   }
 
-  const tip = dayTip();
-  const learned = localUsage().filter((r) => r.kind === 'tour' && r.detail.endsWith(':done')).length;
+  const daily = dayTip(profile.learned);
 
   return createPortal(
     <>
       <TourHost />
+      {tip && !open && !welcome && (
+        <div className="asst__welcome asst__tipb" role="status" aria-live="polite">
+          <p><span aria-hidden="true">💡 </span>{tip.text}</p>
+          <span className="actions">
+            {(tip.tour || tip.href) && <button type="button" className="cbtn cbtn--primary cbtn--sm" onClick={tipGo}>{tip.tour ? 'תראי לי' : 'לשם'}</button>}
+            <button type="button" className="cbtn cbtn--ghost cbtn--sm" onClick={tipOk}>הבנתי</button>
+          </span>
+        </div>
+      )}
       {welcome && !open && (
         <div className="asst__welcome" role="status">
           <p><b>היי קורל ✨</b> אני העוזרת שלך במערכת. אפשר לשאול אותי כל שאלה, ואני גם יכולה להראות לך על המסך איך עושים דברים.</p>
@@ -128,14 +181,14 @@ export function Assistant() {
               <>
                 <section className="asst__tip" aria-labelledby="asst-tip-h">
                   <h3 id="asst-tip-h">טיפ להיום</h3>
-                  <p>{tip.text}</p>
-                  {tip.tour && <button type="button" className="cbtn cbtn--sm" onClick={() => tour(tip.tour!)}>תראי לי</button>}
+                  <p>{daily.text}</p>
+                  {daily.tour && <button type="button" className="cbtn cbtn--sm" onClick={() => tour(daily.tour!)}>תראי לי</button>}
                 </section>
 
                 <section aria-labelledby="asst-sc-h">
                   <h3 id="asst-sc-h">הקיצורים שלך</h3>
                   <div className="asst__chips">
-                    {topScreens().map((s) => <a key={s} className="chip" href={`#/${s}`} onClick={close}>{SCREEN_LABEL[s]}</a>)}
+                    {topScreens(profile).map((s) => <a key={s} className="chip" href={`#/${s}`} onClick={close}>{SCREEN_LABEL[s]}</a>)}
                   </div>
                 </section>
 
@@ -148,10 +201,19 @@ export function Assistant() {
 
                 <section aria-labelledby="asst-me-h">
                   <h3 id="asst-me-h">מה למדתי עלייך עד עכשיו</h3>
-                  <p className="muted">
-                    {learned ? `סיימת ${learned} מדריכים. ` : ''}
-                    אני עדיין לומדת איך את עובדת. עם הזמן אדע מה כבר ברור לך, איפה כדאי לעזור, ובאילו שעות את עובדת.
-                  </p>
+                  {profile.counts.actions < 5 && !profile.learned.length ? (
+                    <p className="muted">אני עדיין לומדת איך את עובדת. עם הזמן אדע מה כבר ברור לך, איפה כדאי לעזור, ובאילו שעות את עובדת.</p>
+                  ) : (
+                    <ul className="asst__learn">
+                      {profile.learned.length > 0 && <li>✅ כבר ברור לך: {profile.learned.map((t) => TOPIC_LABEL[t] ?? t).join(', ')}. על זה לא אציק לך בטיפים.</li>}
+                      {profile.struggling.map((t) => (
+                        <li key={t}>🔁 כדאי לחזור על: {TOPIC_LABEL[t] ?? t} <button type="button" className="cbtn cbtn--sm" onClick={() => tour(t)}>תראי לי</button></li>
+                      ))}
+                      {profile.medianHour != null && <li>🕙 את עובדת בדרך כלל סביב {hourText(profile.medianHour)}, אז תזכורות יגיעו בסביבות השעה הזו.</li>}
+                      {profile.shortcuts.length > 0 && <li>⭐ המסכים שאת פותחת הכי הרבה: {profile.shortcuts.map((s) => SCREEN_LABEL[s] ?? s).join(', ')}.</li>}
+                      {profile.counts.toursDone > 0 && <li>🎓 סיימת {profile.counts.toursDone} מדריכים.</li>}
+                    </ul>
+                  )}
                 </section>
 
                 <p className="muted asst__count">יש לי תשובות ל-{FAQ.length} שאלות נפוצות.</p>

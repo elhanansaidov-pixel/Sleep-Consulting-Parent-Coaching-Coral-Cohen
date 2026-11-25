@@ -40,6 +40,8 @@ export function TourHost() {
   }, []);
 
   const step = tour?.steps[i];
+  // Let other parts (tips) know a tour is running.
+  useEffect(() => { document.body.toggleAttribute('data-tour-active', !!tour); }, [tour]);
 
   // Navigate if needed, then wait up to 1.5s for the target to appear.
   useEffect(() => {
