@@ -19,42 +19,6 @@ function Empty({ title, text }: { title: string; text: string }) {
   );
 }
 
-type Counts = { leads: number; clients: number; programs: number; tasks: number; overdue: number };
-
-export function DashboardScreen() {
-  const [counts, setCounts] = useState<Counts | null>(null);
-  const [err, setErr] = useState(false);
-  useEffect(() => {
-    (async () => {
-      const q = (t: string) => supabase.from(t).select('id', { count: 'exact', head: true });
-      const today = new Date(); today.setHours(0, 0, 0, 0);
-      const [l, c, p, t, o] = await Promise.all([
-        q('leads'), q('clients'),
-        supabase.from('programs').select('id', { count: 'exact', head: true }).eq('status', 'active'),
-        supabase.from('tasks').select('id', { count: 'exact', head: true }).eq('status', 'open'),
-        supabase.from('tasks').select('id', { count: 'exact', head: true }).eq('status', 'open').lt('due_at', today.toISOString()),
-      ]);
-      if (l.error || c.error || p.error || t.error || o.error) return setErr(true);
-      setCounts({ leads: l.count ?? 0, clients: c.count ?? 0, programs: p.count ?? 0, tasks: t.count ?? 0, overdue: o.count ?? 0 });
-    })();
-  }, []);
-  const tiles: [keyof Counts, string, string][] = [['leads', 'פניות', '#/leads'], ['clients', 'משפחות', '#/clients'], ['programs', 'תהליכים פעילים', '#/programs'], ['tasks', 'משימות פתוחות', '#/tasks'], ['overdue', 'משימות באיחור', '#/tasks']];
-  return (
-    <>
-      <PageHead title="לוח בקרה" lead="נתונים אמיתיים מהמערכת. גרפים והשוואות בין תקופות יתווספו בשלב E." />
-      {err && <p className="field__err" role="alert">לא הצלחנו לטעון נתונים.</p>}
-      <div className="tiles">
-        {tiles.map(([k, label, href]) => (
-          <a className={`tile tile--link${k === 'overdue' && counts?.overdue ? ' tile--alert' : ''}`} key={k} href={href}>
-            <p className="tile__label">{label}</p>
-            <p className="tile__value">{counts ? counts[k] : '—'}</p>
-          </a>
-        ))}
-      </div>
-    </>
-  );
-}
-
 export function PlaceholderScreen({ title, stage, text }: { title: string; stage: string; text: string }) {
   return (
     <>
