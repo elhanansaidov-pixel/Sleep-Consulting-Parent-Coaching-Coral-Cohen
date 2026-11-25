@@ -14,6 +14,15 @@ const isStandalone = () => window.matchMedia('(display-mode: standalone)').match
 
 type PushState = 'loading' | 'unsupported' | 'ios-install' | 'denied' | 'off' | 'on';
 
+async function saveSub(sub: PushSubscription) {
+  const j = sub.toJSON();
+  const { error } = await supabase.from('push_subscriptions').upsert(
+    { endpoint: j.endpoint, p256dh: j.keys?.p256dh, auth: j.keys?.auth, user_agent: navigator.userAgent.slice(0, 300) },
+    { onConflict: 'endpoint' },
+  );
+  if (error) throw error;
+}
+
 /** Shared push-subscription state for the settings card and the dashboard nudge. */
 function usePush() {
   const [state, setState] = useState<PushState>('loading');
@@ -26,7 +35,15 @@ function usePush() {
     }
     if (Notification.permission === 'denied') return setState('denied');
     const reg = await navigator.serviceWorker.getRegistration('/admin');
-    const sub = await reg?.pushManager.getSubscription();
+    let sub = await reg?.pushManager.getSubscription();
+    // Self-heal: the browser can rotate or drop a subscription (e.g. after installing the app to the
+    // home screen on Android). With permission already granted, re-subscribe silently and re-save.
+    if (reg && Notification.permission === 'granted') {
+      try {
+        sub ??= await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(VAPID_PUBLIC_KEY) });
+        await saveSub(sub);
+      } catch { /* keep current state; the user can toggle in settings */ }
+    }
     setState(sub ? 'on' : 'off');
   }
   useEffect(() => { detect(); }, []);
@@ -39,12 +56,7 @@ function usePush() {
       const reg = await navigator.serviceWorker.register('/admin-sw.js', { scope: '/admin' });
       await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(VAPID_PUBLIC_KEY) });
-      const j = sub.toJSON();
-      const { error } = await supabase.from('push_subscriptions').upsert(
-        { endpoint: j.endpoint, p256dh: j.keys?.p256dh, auth: j.keys?.auth, user_agent: navigator.userAgent.slice(0, 300) },
-        { onConflict: 'endpoint' },
-      );
-      if (error) throw error;
+      await saveSub(sub);
       setMsg('ההתראות הופעלו במכשיר הזה.');
     } catch {
       setMsg('לא הצלחנו להפעיל התראות במכשיר הזה.');
