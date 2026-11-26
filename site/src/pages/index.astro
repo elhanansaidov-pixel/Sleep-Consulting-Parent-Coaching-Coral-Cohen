@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Chrome from '../components/Chrome.astro';
+import Hero from '../components/Hero.astro';
+import Sections from '../components/Sections.astro';
+import Questionnaire from '../components/Questionnaire.astro';
+---
+<Base
+  title="קורל כהן | ייעוץ שינה והדרכת הורים"
+  description="קורל כהן, יועצת שינה מוסמכת בשיטת לילה טוב ומדריכת הורים פרטנית בגישת אדלר. תהליך ייעוץ שינה של 8 שבועות לגילאי 5 חודשים עד 5 שנים, ומפגשי הדרכת הורים שבועיים בזום."
+>
+  <Chrome part="header" />
+  <main id="main">
+    <Hero />
+    <Sections />
+    <Questionnaire />
+  </main>
+  <Chrome part="footer" />
+  <script>
+    import '../scripts/motion';
+  </script>
+</Base>

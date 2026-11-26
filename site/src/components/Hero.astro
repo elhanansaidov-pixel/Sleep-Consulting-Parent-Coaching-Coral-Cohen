@@ -1,0 +1,80 @@
+---
+import { WHATSAPP_PARENTING_URL } from '../data/questionnaire';
+// Final Higgsfield film (Seedance 2.5, 12s), encoded with short GOP for smooth scroll scrubbing.
+const hasVideo = true;
+const videoDesktop = '/media/hero-1080.mp4';
+const videoMobile = '/media/hero-720.mp4';
+---
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="hero__stage">
+    <picture class="hero__layer hero__layer--night">
+      <source media="(max-width: 960px)" srcset="/media/night-960.webp" />
+      <img src="/media/night-1920.webp" alt="" width="1920" height="1086" fetchpriority="high" decoding="async" />
+    </picture>
+    <picture class="hero__layer hero__layer--morning" data-hero-morning>
+      <source media="(max-width: 960px)" srcset="/media/morning-960.webp" />
+      <img src="/media/morning-1920.webp" alt="" width="1920" height="1086" loading="lazy" decoding="async" />
+    </picture>
+    {hasVideo && (
+      <video class="hero__layer hero__video" data-hero-video muted playsinline preload="none" aria-hidden="true"
+        data-src-desktop={videoDesktop} data-src-mobile={videoMobile}></video>
+    )}
+    <div class="hero__shade" aria-hidden="true"></div>
+
+    <div class="hero__copy wrap">
+      <h1 id="hero-title" class="hero__title">
+        ייעוץ שינה והדרכת הורים, בליווי אישי וצמוד
+      </h1>
+      <p class="hero__sub">
+        תהליך ייעוץ שינה של 8 שבועות לתינוקות ולילדים מגיל 5 חודשים עד 5 שנים,
+        ומפגשי הדרכת הורים שבועיים בזום. יועצת שינה ומדריכת הורים מוסמכת.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--light" href="#questionnaire">שאלון התאמה לייעוץ שינה</a>
+        <a class="hero__link" href={WHATSAPP_PARENTING_URL} target="_blank" rel="noopener">מתעניינים בהדרכת הורים? כתבו לי בוואטסאפ</a>
+      </div>
+      <p class="hero__micro">השאלון לוקח כ-5 דקות ואינו מחייב.</p>
+    </div>
+    <a class="hero__cue" href="#pains" data-hero-cue aria-label="גלילה לתוכן">
+      <span>גללו למטה</span>
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</section>
+
+<style>
+  .hero { position: relative; height: 165vh; background: var(--night); color: var(--cream); }
+  .hero__stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; align-items: end; }
+  .hero__layer, .hero__layer img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 38% 60%; }
+  .hero__layer--morning { opacity: 0; }
+  .hero__video { opacity: 0; }
+  .hero__shade {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(18, 20, 28, 0.82) 0%, rgba(18, 20, 28, 0.35) 42%, rgba(18, 20, 28, 0) 65%);
+  }
+  .hero__copy { position: relative; z-index: 2; padding-bottom: clamp(5rem, 11vh, 7.5rem); }
+  .hero__title { font-size: clamp(2rem, 1.3rem + 2.6vw, 3.6rem); font-weight: 300; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 0.6em; max-width: 22ch; text-wrap: balance; }
+  .hero__sub { font-size: var(--step-0); line-height: 1.65; color: rgba(254, 250, 244, 0.85); max-width: 34rem; margin-bottom: 0; }
+  .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 2rem; margin-top: 2rem; }
+  .hero__link { color: var(--cream); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.35em; font-weight: 500; }
+  .hero__link:hover { text-decoration-thickness: 2px; }
+  .hero__cue { position: absolute; z-index: 3; inset-inline: 0; bottom: 1.25rem; margin-inline: auto; width: max-content; display: grid; justify-items: center; gap: 0.15rem; color: rgba(254, 250, 244, 0.8); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.04em; }
+  .hero__cue svg { animation: cue 1.8s ease-in-out infinite; }
+  @keyframes cue { 0%, 100% { transform: translateY(0); opacity: 0.6; } 50% { transform: translateY(6px); opacity: 1; } }
+  .hero__micro { margin: 1rem 0 0; font-size: var(--step--1); color: rgba(254, 250, 244, 0.65); }
+
+  @media (max-width: 760px) {
+    .hero { height: 150vh; }
+    .hero__layer, .hero__layer img { object-position: 46% 50%; }
+    .hero__shade { background: linear-gradient(to top, rgba(18, 20, 28, 0.94) 0%, rgba(18, 20, 28, 0.6) 50%, rgba(18, 20, 28, 0.05) 80%); }
+    .hero__copy { padding-bottom: 5.5rem; }
+    .hero__actions .btn { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__cue svg { animation: none; }
+    .hero { height: auto; }
+    .hero__stage { position: relative; min-height: 100svh; }
+  }
+  :global(html.a11y-still) .hero { height: auto; }
+  :global(html.a11y-still) .hero__stage { position: relative; min-height: 100svh; }
+</style>

@@ -1,0 +1,238 @@
+---
+import Thread from './Thread.astro';
+import SleepDiary from './SleepDiary.astro';
+import Certificates from './Certificates.astro';
+import { WHATSAPP_PARENTING_URL } from '../data/questionnaire';
+
+const painsSleep = [
+  { t: 'הירדמות', d: 'השכבה שנמשכת הרבה זמן, או שמצליחה רק כשמישהו נשאר ליד המיטה.' },
+  { t: 'יקיצות', d: 'התעוררויות חוזרות במהלך הלילה.' },
+  { t: 'תנומות יום', d: 'תנומות קצרות, קושי להירדם במהלך היום, או יום שלם שמתנהל סביב תנומה אחת.' },
+  { t: 'מעבר למיטה', d: 'מעבר למיטה או לחדר חדש.' },
+];
+const painsHome = [
+  { t: 'גבולות', d: 'קשה להציב גבול, או שכל גבול נגמר בוויכוח.' },
+  { t: 'ילד שצריך יותר', d: 'ילד אחד שדורש יותר תשומת לב, זמן או סבלנות מכולם.' },
+  { t: 'העסקת יתר', d: 'תחושה שצריך להעסיק את הילדים כל הזמן, ושאין רגע שקט.' },
+  { t: 'התגובות שלנו', d: 'מצבים שחוזרים על עצמם, ותגובות שלנו שאנחנו לא שלמים איתן.' },
+];
+const sleepSteps = [
+  { t: 'מפגש היכרות בזום', m: 'כשעה וחצי', d: 'אני מכירה את הרגלי המשפחה ואת סדר היום, ומבינה איפה בדיוק נמצאים הקשיים סביב השינה.' },
+  { t: 'תוכנית עבודה ב-4 שלבים', m: 'כתובה ומסודרת', d: 'אחרי המפגש אני כותבת לכם תוכנית עבודה מסודרת, שבנויה מארבעה שלבים ומותאמת לילד ולבית שלכם.' },
+  { t: 'יומן שינה', m: 'כל ערב', d: 'לאורך כל התהליך אתם ממלאים יומן שינה. ככה אנחנו עובדים לפי מה שקורה בפועל.' },
+  { t: 'פידבק על הלילה', m: 'כל יום', d: 'בכל יום אני עוברת על היומן ונותנת לכם פידבק על הלילה שהיה.' },
+  { t: 'שיחה שבועית', m: 'פעם בשבוע', d: 'בודקים איפה אנחנו ואיך מתקדמים, ומחליטים יחד אם אפשר לעבור לשלב הבא.' },
+  { t: 'השלב האחרון', m: 'המטרה', d: 'מניחים את הילד במיטה, והוא יודע להירדם באופן עצמאי.' },
+];
+const parentingTopics = [
+  'גבולות, ואיך להציב אותם בלי מאבק',
+  'ילד אחד שצריך יותר',
+  'העסקת יתר',
+  'הבנת ההתנהגות של הילדים',
+  'התגובות שלנו כהורים, ומה אפשר לעשות אחרת',
+];
+const fitYes = [
+  'הילד בגיל 5 חודשים עד 5 שנים.',
+  'אתם רוצים לשנות משהו בשינה, ומוכנים להתמיד בתהליך של 8 שבועות.',
+  'יש לכם כמה דקות בכל ערב למלא יומן שינה.',
+  'ההורים, או המבוגרים שמטפלים בילד ביום-יום, יכולים להיות שותפים לתהליך.',
+];
+const fitNo = [
+  'אתם מחפשים פתרון של לילה אחד.',
+  'יש שאלה רפואית שעוד לא נבדקה. במקרה כזה כדאי להתחיל אצל רופא/ת הילדים.',
+];
+const includes = [
+  'מפגש היכרות בזום, כשעה וחצי',
+  'תוכנית עבודה כתובה ב-4 שלבים',
+  'פידבק יומי על יומן השינה',
+  'שיחה שבועית',
+  'ליווי צמוד לאורך 8 שבועות',
+];
+---
+<!-- Pains -->
+<section class="section pains" id="pains" aria-labelledby="pains-title">
+  <div class="wrap">
+    <div class="pains__head">
+      <h2 id="pains-title">על מה פונים אליי</h2>
+      <p class="pains__intro">אלה הדברים שהורים מתארים לי בדרך כלל, בלילה ובבית. אם משהו כאן מוכר לכם, כנראה שאפשר לעשות איתו משהו.</p>
+    </div>
+    <div class="pains__groups">
+      <div>
+        <h3 class="pains__group">שינה</h3>
+        <dl class="pains__list">
+          {painsSleep.map((p) => (<div class="pain"><dt>{p.t}</dt><dd>{p.d}</dd></div>))}
+        </dl>
+      </div>
+      <div>
+        <h3 class="pains__group">בית והורות</h3>
+        <dl class="pains__list">
+          {painsHome.map((p) => (<div class="pain"><dt>{p.t}</dt><dd>{p.d}</dd></div>))}
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About -->
+<section class="section about" id="about" aria-labelledby="about-title">
+  <div class="wrap about__grid">
+    <div class="about__text">
+      <h2 id="about-title">קורל כהן</h2>
+      <p class="about__role">יועצת שינה מוסמכת ומדריכת הורים פרטנית מוסמכת</p>
+      <p>אני יועצת שינה מוסמכת בשיטת "לילה טוב" לתינוקות ולילדים מגיל 5 חודשים עד 5 שנים, ומדריכת הורים פרטנית מוסמכת בגישת אדלר. את שתי ההכשרות עברתי בבית למקצועות ההורות, במסלולים של מאות שעות אקדמיות.</p>
+      <p>אני מגיעה עם ידע מקצועי מעמיק, שיטה סדורה וכלים מעשיים, ואני עובדת עם כל משפחה באופן אישי וצמוד. אין תוכנית אחת שמתאימה לכל ילד, ולכן אני לא מתחילה מתוכנית. אני מתחילה מהיכרות: מי הילד, איך נראה יום רגיל אצלכם, ואיפה בדיוק נמצא הקושי.</p>
+      <p>משם בונים יחד תוכנית, ואני נשארת איתכם לאורך כל הדרך: עוקבת, מדייקת ומעדכנת לפי מה שקורה בפועל, עד שאתם מרגישים את השינוי בבית.</p>
+    </div>
+    <figure class="about__mark">
+      <img src="/brand/logo-512.webp" alt="הלוגו של קורל כהן, ייעוץ שינה והדרכת הורים" width="512" height="512" loading="lazy" decoding="async" />
+    </figure>
+  </div>
+  <div class="wrap">
+    <Certificates />
+  </div>
+  <Thread />
+</section>
+
+<!-- Service 1: Sleep consulting -->
+<section class="section process" id="process" aria-labelledby="process-title">
+  <div class="wrap process__grid">
+    <div>
+      <p class="svc__label">ייעוץ שינה</p>
+      <h2 id="process-title">תהליך של 8 שבועות, עד שהילד נרדם לבד</h2>
+      <p class="process__intro">לתינוקות ולילדים מגיל 5 חודשים עד 5 שנים, בשיטת "לילה טוב".</p>
+      <ol class="timeline" data-timeline>
+        <span class="timeline__rail" aria-hidden="true"><span class="timeline__fill" data-timeline-fill></span></span>
+        {sleepSteps.map((s) => (
+          <li class="tstep">
+            <span class="tstep__dot" aria-hidden="true"></span>
+            <div>
+              <h3>{s.t} <span class="tstep__meta">{s.m}</span></h3>
+              <p>{s.d}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+    <SleepDiary />
+  </div>
+</section>
+
+<!-- Fit + includes (sleep) -->
+<section class="section fit" aria-labelledby="fit-title">
+  <div class="wrap fit__grid">
+    <div class="fit__body">
+      <h2 id="fit-title">האם ייעוץ השינה מתאים לכם?</h2>
+      <div class="fit__cols">
+        <div>
+          <h3>מתאים כש:</h3>
+          <ul class="ticks">{fitYes.map((x) => <li>{x}</li>)}</ul>
+        </div>
+        <div>
+          <h3>כדאי לחכות כש:</h3>
+          <ul class="ticks ticks--no">{fitNo.map((x) => <li>{x}</li>)}</ul>
+        </div>
+      </div>
+    </div>
+    <aside class="includes" aria-labelledby="includes-title">
+      <h3 id="includes-title">מה כלול בייעוץ השינה</h3>
+      <ul class="includes__list">{includes.map((x) => <li>{x}</li>)}</ul>
+      <a class="btn btn--light" href="#questionnaire">לשאלון ההתאמה</a>
+    </aside>
+  </div>
+</section>
+
+<!-- Service 2: Parent coaching -->
+<section class="section parenting" id="parenting" aria-labelledby="parenting-title">
+  <div class="wrap parenting__grid">
+    <div>
+      <p class="svc__label">הדרכת הורים</p>
+      <h2 id="parenting-title">מפגש שבועי, עד שהבית חוזר לשלווה</h2>
+      <p>הדרכת ההורים היא מפגש זום שבועי. בכל מפגש אנחנו מדברים על השבוע שהיה: מה מפריע בבית, ואיפה הקושי המרכזי.</p>
+      <p>יחד אנחנו מנסים להבין את ההתנהגות של הילדים ואת התגובות שלכם כהורים, ולומדים המון כלים מעשיים, עד שאתם מרגישים שהבית חזר לשלווה ואתם חזרתם לשליטה.</p>
+      <p class="parenting__approach">ההדרכה מבוססת על גישת אדלר.</p>
+      <a class="btn" href={WHATSAPP_PARENTING_URL} target="_blank" rel="noopener">לפרטים על הדרכת הורים בוואטסאפ</a>
+    </div>
+    <div class="parenting__topics">
+      <h3>על מה מדברים במפגשים, לדוגמה</h3>
+      <ul class="ticks">{parentingTopics.map((x) => <li>{x}</li>)}</ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .svc__label { font-weight: 500; color: var(--muted); margin-bottom: 0.5rem; }
+
+  /* Pains */
+  .pains__head { display: grid; gap: 0 var(--space-m); margin-bottom: var(--space-m); }
+  .pains__intro { color: var(--muted); max-width: 36rem; margin: 0; }
+  .pains__groups { display: grid; gap: var(--space-m); }
+  .pains__group { font-size: var(--step-0); font-weight: 500; color: var(--muted); margin-bottom: 0.75rem; }
+  .pains__list { margin: 0; border-top: 1px solid var(--ink); }
+  .pain { padding: 1.25rem 0; border-bottom: 1px solid var(--line); display: grid; gap: 0.3rem; }
+  .pain dt { font-weight: 500; font-size: var(--step-1); }
+  .pain dd { margin: 0; color: var(--muted); max-width: 30rem; }
+  @media (min-width: 900px) {
+    .pains__groups { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 1000px) {
+    .pains__head { grid-template-columns: 1fr 1fr; align-items: end; }
+    .pains__head h2 { margin: 0; }
+  }
+
+  /* About */
+  .about { background: var(--sand-soft); }
+  .about__grid { display: grid; gap: var(--space-m); align-items: center; }
+  .about__text h2 { margin-bottom: 0.1em; }
+  .about__role { color: var(--muted); font-weight: 500; margin-bottom: 1.5rem; }
+  .about__text p:not(.about__role) { max-width: 38rem; }
+  .about__mark { margin: 0; width: min(18rem, 70%); justify-self: center; }
+  .about__mark img { width: 100%; height: auto; border-radius: 50%; }
+  .about :global(.thread) { margin-top: var(--space-m); }
+  @media (min-width: 900px) {
+    .about__grid { grid-template-columns: 7fr 5fr; }
+  }
+
+  /* Sleep process */
+  .process__grid { display: grid; gap: var(--space-m); }
+  .process__intro { color: var(--muted); margin-bottom: var(--space-m); }
+  .timeline { list-style: none; margin: 0; padding: 0; position: relative; display: grid; gap: 1.75rem; }
+  .timeline__rail { position: absolute; top: 0.6rem; bottom: 0.6rem; inset-inline-start: 0.35rem; width: 1px; background: var(--stone); }
+  .timeline__fill { position: absolute; inset: 0; background: var(--ink); transform-origin: top; transform: scaleY(1); }
+  :global(.js-motion) .timeline__fill { transform: scaleY(0); }
+  .tstep { display: grid; grid-template-columns: 0.7rem 1fr; gap: 1.25rem; position: relative; }
+  .tstep__dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--cream); border: 1px solid var(--ink); margin-top: 0.55rem; position: relative; z-index: 1; }
+  .tstep:last-child .tstep__dot { background: var(--ink); }
+  .tstep h3 { font-size: var(--step-1); margin-bottom: 0.3rem; }
+  .tstep__meta { display: inline-block; font-size: var(--step--1); font-weight: 400; color: var(--muted); margin-inline-start: 0.5rem; }
+  .tstep p { color: var(--muted); margin: 0; max-width: 34rem; }
+  @media (min-width: 1000px) {
+    .process__grid { grid-template-columns: 6fr 5fr; align-items: start; }
+  }
+
+  /* Fit + includes */
+  .fit { background: var(--sand-soft); }
+  .fit__grid { display: grid; gap: var(--space-m); }
+  .fit__cols { display: grid; gap: var(--space-m); margin-top: var(--space-s); }
+  .fit h3 { font-size: var(--step-0); font-weight: 500; }
+  .ticks { list-style: none; padding: 0; margin: 0; }
+  .ticks li { padding-block: 0.8rem; border-top: 1px solid var(--line); }
+  .ticks--no li { color: var(--muted); }
+  .includes { background: var(--night); color: var(--cream); border-radius: var(--radius); padding: var(--space-m) var(--space-s); align-self: start; }
+  .includes h3 { font-size: var(--step-1); font-weight: 400; }
+  .includes__list { list-style: none; margin: 0 0 2rem; padding: 0; }
+  .includes__list li { padding-block: 0.75rem; border-bottom: 1px solid rgba(254, 250, 244, 0.15); }
+  @media (min-width: 900px) {
+    .fit__grid { grid-template-columns: 7fr 4fr; }
+    .fit__cols { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Parenting */
+  .parenting__grid { display: grid; gap: var(--space-m); }
+  .parenting__grid p { max-width: 38rem; }
+  .parenting__approach { color: var(--muted); }
+  .parenting .btn { margin-top: 1rem; }
+  .parenting__topics h3 { font-size: var(--step-0); font-weight: 500; }
+  @media (min-width: 900px) {
+    .parenting__grid { grid-template-columns: 7fr 5fr; align-items: start; }
+  }
+</style>

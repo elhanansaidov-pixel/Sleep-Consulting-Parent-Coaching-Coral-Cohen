@@ -1,0 +1,141 @@
+---
+import { intro, steps, consent, thanks, WHATSAPP_URL, WHATSAPP_PARENTING_URL } from '../data/questionnaire';
+const endpoint = 'https://fvkeawbtwbqcvtbqjwem.supabase.co/functions/v1/submit-lead';
+const turnstileSiteKey = '0x4AAAAAAGPjl8NbGvMuPIOl'; // public site key
+const total = steps.length + 1;
+---
+<section class="section q" id="questionnaire" aria-labelledby="q-title">
+  <div class="wrap q__grid">
+    <header class="q__head">
+      <h2 id="q-title">שאלון התאמה לייעוץ שינה</h2>
+      <p class="q__greet">{intro.greeting}</p>
+      <p class="q__intro">{intro.body}</p>
+      <p class="q__save">התשובות נשמרות במכשיר שלכם עד השליחה.</p>
+      <p class="q__other">מתעניינים בהדרכת הורים? <a href={WHATSAPP_PARENTING_URL} target="_blank" rel="noopener">כתבו לי בוואטסאפ</a></p>
+    </header>
+
+    <div class="q__card">
+      <form class="qform" data-qform data-endpoint={endpoint} novalidate aria-describedby="q-progress-text">
+        <div class="qform__progress" aria-hidden="true"><span data-q-bar></span></div>
+        <p class="qform__count" id="q-progress-text" aria-live="polite" data-q-count>שלב 1 מתוך {total}</p>
+
+        <!-- honeypot -->
+        <div class="sr-only" aria-hidden="true">
+          <label>אל תמלאו שדה זה <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        {steps.map((step, si) => (
+          <fieldset class="qstep" data-q-step={si} hidden={si !== 0}>
+            <legend class="qstep__title">{step.title}</legend>
+            {step.fields.map((f) => (
+              <div class="qfield">
+                <label for={`q-${f.id}`}>
+                  <span class="qfield__num">{f.num}.</span> {f.label}
+                  {f.required && <span class="sr-only"> (חובה)</span>}
+                </label>
+                {f.list && (
+                  <ul class="qfield__list">{f.list.map((li) => <li>{li}</li>)}</ul>
+                )}
+                {f.hint && <p class="qfield__hint" id={`q-${f.id}-hint`}>{f.hint}</p>}
+                {f.type === 'textarea' ? (
+                  <textarea id={`q-${f.id}`} name={f.id} rows="4" maxlength="3000" required={f.required}
+                    aria-describedby={`${f.hint ? `q-${f.id}-hint ` : ''}q-${f.id}-err`}></textarea>
+                ) : (
+                  <input id={`q-${f.id}`} name={f.id} type={f.type} maxlength={f.type === 'tel' ? 20 : 200}
+                    required={f.required} autocomplete={f.autocomplete}
+                    inputmode={f.type === 'tel' ? 'tel' : f.type === 'email' ? 'email' : undefined}
+                    dir={f.type === 'text' ? 'auto' : 'ltr'}
+                    aria-describedby={`${f.hint ? `q-${f.id}-hint ` : ''}q-${f.id}-err`} />
+                )}
+                <p class="qfield__err" id={`q-${f.id}-err`} aria-live="polite"></p>
+              </div>
+            ))}
+          </fieldset>
+        ))}
+
+        <fieldset class="qstep" data-q-step={steps.length} hidden>
+          <legend class="qstep__title">{consent.title}</legend>
+          {consent.lines.map((l) => <p class="qconsent">{l}</p>)}
+          <div class="qfield qfield--check">
+            <input id="q-consent" name="consent" type="checkbox" required aria-describedby="q-consent-err" />
+            <label for="q-consent">{consent.checkbox}</label>
+            <p class="qfield__err" id="q-consent-err" aria-live="polite"></p>
+          </div>
+          <div class="qfield">
+            <label for="q-full_name">{consent.nameLabel}</label>
+            <input id="q-full_name" name="full_name" type="text" maxlength="200" required autocomplete="name" aria-describedby="q-full_name-err" />
+            <p class="qfield__err" id="q-full_name-err" aria-live="polite"></p>
+          </div>
+          <p class="qfield__hint">תאריך: יירשם אוטומטית בעת השליחה.</p>
+          <div class="qturnstile" data-q-turnstile data-sitekey={turnstileSiteKey}></div>
+          <p class="qfield__hint">האימות מפני ספאם נעשה אוטומטית ברקע.</p>
+        </fieldset>
+
+        <div class="qform__nav">
+          <button type="button" class="btn btn--ghost" data-q-prev hidden>חזרה</button>
+          <button type="button" class="btn" data-q-next>הבא</button>
+          <button type="submit" class="btn" data-q-submit hidden>שליחת השאלון</button>
+        </div>
+        <p class="qform__status" role="alert" data-q-status></p>
+      </form>
+
+      <div class="qdone" data-q-done hidden tabindex="-1">
+        <p class="qdone__heart" aria-hidden="true">🤍</p>
+        <p class="qdone__text">{thanks}</p>
+        <a class="btn btn--ghost" href={WHATSAPP_URL} target="_blank" rel="noopener">לשיחה בוואטסאפ</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initQuestionnaire } from '../scripts/questionnaire';
+  initQuestionnaire();
+</script>
+
+<style>
+  .q { background: var(--cream); }
+  .q__grid { display: grid; gap: var(--space-m); }
+  .q__greet { font-weight: 300; font-size: var(--step-2); margin-bottom: 0.3em; }
+  .q__intro { color: var(--muted); max-width: 36rem; }
+  .q__save { font-size: var(--step--1); color: var(--muted); }
+  .q__other { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  .q__other a { font-weight: 500; text-underline-offset: 0.3em; }
+  .q__card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(1.25rem, 4vw, 2.75rem);  }
+  .qform__progress { height: 3px; background: var(--sand-soft); border-radius: 3px; overflow: hidden; }
+  .qform__progress span { display: block; height: 100%; width: 20%; background: var(--taupe); transition: width 0.6s var(--ease); }
+  .qform__count { font-size: var(--step--1); color: var(--muted); margin: 0.75rem 0 1.25rem; }
+  .qstep { border: 0; padding: 0; margin: 0; min-width: 0; }
+  .qstep__title { font-weight: 300; font-size: var(--step-2); padding: 0; margin-bottom: 1rem; }
+  .qfield { margin-bottom: 1.5rem; }
+  .qfield label { display: block; font-weight: 500; margin-bottom: 0.4rem; line-height: 1.45; }
+  .qfield__num { color: var(--taupe); font-family: var(--font-display); }
+  .qfield__hint { font-size: var(--step--1); color: var(--muted); margin: -0.15rem 0 0.5rem; }
+  .qfield__list { margin: 0.25rem 0 0.75rem; padding-inline-start: 1.25rem; color: var(--ink); }
+  .qfield__list li { margin-bottom: 0.3rem; }
+  .qfield input[type='text'], .qfield input[type='tel'], .qfield input[type='email'], .qfield textarea {
+    width: 100%; font: inherit; color: var(--ink); background: var(--cream);
+    border: 1px solid var(--stone); border-radius: 4px; padding: 0.85rem 1rem; min-height: 3.25rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .qfield input[dir='ltr'] { text-align: right; }
+  .qfield textarea { resize: vertical; min-height: 7.5rem; line-height: 1.6; }
+  .qfield input:focus, .qfield textarea:focus { outline: none; border-color: var(--taupe); box-shadow: 0 0 0 3px rgba(233, 185, 122, 0.45); }
+  .qfield [aria-invalid='true'] { border-color: #a3362a; }
+  .qfield__err { color: #a3362a; font-size: var(--step--1); margin: 0.35rem 0 0; min-height: 0; }
+  .qfield--check { display: grid; grid-template-columns: auto 1fr; gap: 0.75rem; align-items: start; }
+  .qfield--check input { width: 1.4rem; height: 1.4rem; margin-top: 0.2rem; accent-color: var(--taupe); }
+  .qfield--check .qfield__err { grid-column: 1 / -1; }
+  .qconsent { color: var(--muted); }
+  .qform__nav { display: flex; gap: 0.75rem; justify-content: space-between; margin-top: 1rem; }
+  .qform__nav [data-q-next], .qform__nav [data-q-submit] { margin-inline-start: auto; }
+  .qform__status { margin: 1rem 0 0; color: #a3362a; }
+  .qform__status:empty { display: none; }
+  .qdone { text-align: center; padding: var(--space-m) 0; }
+  .qdone__heart { font-size: 2.5rem; margin: 0; }
+  .qdone__text { font-weight: 300; font-size: var(--step-2); max-width: 26ch; margin: 0.5rem auto 1.5rem; }
+  @media (min-width: 960px) {
+    .q__grid { grid-template-columns: 5fr 7fr; align-items: start; }
+    .q__head { position: sticky; top: 12vh; }
+  }
+</style>

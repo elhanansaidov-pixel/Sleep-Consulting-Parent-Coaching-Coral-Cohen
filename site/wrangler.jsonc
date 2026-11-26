@@ -1,0 +1,14 @@
+{
+  // Static site on Cloudflare Workers (static assets only — no server code).
+  // Deploy: npm run build && npx wrangler deploy   (production deploys only with owner approval)
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "coral-cohen-sleep",
+  "compatibility_date": "2026-11-17",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "workers_dev": true,
+  "preview_urls": true
+}

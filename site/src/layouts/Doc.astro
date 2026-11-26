@@ -1,0 +1,28 @@
+---
+import Base from './Base.astro';
+interface Props { title: string; description: string; updated: string; }
+const { title, description, updated } = Astro.props;
+---
+<Base title={`${title} | קורל כהן`} description={description}>
+  <header class="dochead">
+    <div class="wrap dochead__in">
+      <a href="/" class="dochead__brand">Coral Cohen</a>
+      <a href="/">חזרה לעמוד הראשי</a>
+    </div>
+  </header>
+  <main id="main" class="wrap doc">
+    <h1>{title}</h1>
+    <p class="doc__updated">עודכן לאחרונה: {updated}</p>
+    <slot />
+  </main>
+</Base>
+<style>
+  .dochead { border-bottom: 1px solid var(--line); }
+  .dochead__in { display: flex; justify-content: space-between; align-items: center; min-height: 4rem; }
+  .dochead__brand { direction: ltr; text-decoration: none; font-family: var(--font-brand); font-size: 1.3rem; letter-spacing: 0.01em; }
+  .doc { max-width: 46rem; padding-block: var(--space-m) var(--space-l); }
+  .doc h1 { font-size: var(--step-3); }
+  .doc__updated { color: var(--muted); font-size: var(--step--1); }
+  .doc :global(h2) { font-size: var(--step-1); font-weight: 500; margin-top: 2.2rem; }
+  .doc :global(li) { margin-bottom: 0.4rem; }
+</style>
